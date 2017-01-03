@@ -43,7 +43,7 @@ namespace CHChessClient {
 		/// 設計工具所需的變數。
 
 		Socket^ clientSocket;
-		String Name;
+		String^ Name;
 		array<Byte>^ buffer;
 	private: System::Windows::Forms::Button^  send;
 	private: System::Windows::Forms::Button^  button1;
@@ -94,6 +94,7 @@ namespace CHChessClient {
 			this->textBox1->Location = System::Drawing::Point(12, 48);
 			this->textBox1->Multiline = true;
 			this->textBox1->Name = L"textBox1";
+			this->textBox1->ScrollBars = System::Windows::Forms::ScrollBars::Vertical;
 			this->textBox1->Size = System::Drawing::Size(208, 230);
 			this->textBox1->TabIndex = 2;
 			this->textBox1->TextChanged += gcnew System::EventHandler(this, &ChessClientForm::textBox1_TextChanged);

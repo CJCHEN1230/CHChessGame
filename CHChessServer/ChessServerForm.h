@@ -11,7 +11,7 @@ namespace CHChessServer {
 	using namespace System::Net;
 	using namespace System::Net::Sockets;
 	using namespace System::Text;
-
+	using namespace System::Collections::Generic;
 
 
 	/// <summary>
@@ -48,9 +48,11 @@ namespace CHChessServer {
 	private:
 		/// <summary>
 		/// 設計工具所需的變數。
-		array<Byte>^ buffer;		
+		array<Byte>^ buffer;
+		List<Socket^>^ clientSockets;// = gcnew List<String^>();		
 		Socket^ serverSocket;
 		Socket^ clientSocket;
+
 	private: System::Windows::Forms::TextBox^  textBox1;
 	private: System::Windows::Forms::TextBox^  textBox2;
 
@@ -111,12 +113,14 @@ namespace CHChessServer {
 #pragma endregion
 	//進行各種與server的初始化綁定
 	private: System::Void StartServer() {
+		
 		try
 		{
+			clientSockets = gcnew List<Socket^>();
 			serverSocket = gcnew Socket(AddressFamily::InterNetwork, SocketType::Stream, ProtocolType::Tcp);
 			serverSocket->Bind(gcnew IPEndPoint(IPAddress::Any, 1234));//IPEndPoint為一個定義完整的server位置，包含ip跟port
 			serverSocket->Listen(10);//一個等待連線的queue長度，不是只能10個連線
-			serverSocket->BeginAccept(gcnew AsyncCallback(this, &ChessServerForm::AcceptCallback), nullptr); //AsyncCallback(AcceptCallback),一旦連接上後的回調函數為AcceptCallback。當系統調用這個函數時，自動賦予的輸入參數為IAsyncResult類型變量ar。
+			serverSocket->BeginAccept(gcnew AsyncCallback(this, &ChessServerForm::AcceptCallback), serverSocket); //AsyncCallback(AcceptCallback),一旦連接上後的回調函數為AcceptCallback。當系統調用這個函數時，自動賦予的輸入參數為IAsyncResult類型變量ar。
 		}
 		catch (SocketException^ ex)
 		{
@@ -140,15 +144,11 @@ namespace CHChessServer {
 		{
 			
 			clientSocket = serverSocket->EndAccept(AR); //完成連接，並返回此時的socket通道
+			clientSockets->Add(clientSocket);
 			buffer =gcnew array<Byte>(clientSocket->ReceiveBufferSize);
-			array<unsigned char>^ sendData = Encoding::ASCII->GetBytes("\nHello everyone");
-
-			//textBox1->Text += "Hello everyone";
-			clientSocket->BeginSend(sendData, 0, sendData->Length, SocketFlags::None, gcnew AsyncCallback(this, &ChessServerForm::SendCallback), nullptr);
-			
-			clientSocket->BeginReceive(buffer, 0, buffer->Length, SocketFlags::None, gcnew AsyncCallback(this, &ChessServerForm::ReceiveCallback), nullptr);
-			
-
+			array<unsigned char>^ sendData = Encoding::ASCII->GetBytes("Hello Client");		
+			clientSocket->BeginSend(sendData, 0, sendData->Length, SocketFlags::None, gcnew AsyncCallback(this, &ChessServerForm::SendCallback), clientSocket);			
+			clientSocket->BeginReceive(buffer, 0, buffer->Length, SocketFlags::None, gcnew AsyncCallback(this, &ChessServerForm::ReceiveCallback), clientSocket);			
 			serverSocket->BeginAccept(gcnew AsyncCallback(this, &ChessServerForm::AcceptCallback), nullptr);
 		}
 		catch (SocketException^ ex)
@@ -163,9 +163,11 @@ namespace CHChessServer {
 	//設定SendCallback
 	private: void SendCallback(IAsyncResult^ AR)
 	{
+		Socket^ current = (Socket^)AR->AsyncState;
+		
 		try
 		{
-			clientSocket->EndSend(AR);//終止Send
+			current->EndSend(AR);//終止Send
 		}
 		catch (SocketException^ ex)
 		{
@@ -189,17 +191,22 @@ namespace CHChessServer {
 
 	private: void ReceiveCallback(IAsyncResult^ AR)
 	{
+
+		Socket^ current = (Socket^)AR->AsyncState;
 		try
 		{
 			
-			int received = clientSocket->EndReceive(AR);
+			int received = current->EndReceive(AR);// 結束非同步讀取，並回傳收到幾個Byte
 
 			if (received == 0)
 			{
 				return;
 			}
 			String^ message = Encoding::ASCII->GetString(buffer);
-			buffer = gcnew array<Byte>(clientSocket->ReceiveBufferSize);
+
+			array<unsigned char>^ sendData = Encoding::ASCII->GetBytes(message);
+
+			
 			MyCallback^ callback = gcnew MyCallback(this, &ChessServerForm::UpdataTB);
 			//callback(message);
 			this->Invoke(callback, message);
@@ -208,11 +215,23 @@ namespace CHChessServer {
 			SubmitPersonToDataGrid(person);*/
 
 			
-			clientSocket->BeginReceive(buffer, 0, buffer->Length, SocketFlags::None, gcnew AsyncCallback(this, &ChessServerForm::ReceiveCallback), nullptr);
+
+			for each(Socket^ EachSocket in clientSockets) {
+				if (current != EachSocket) {
+					EachSocket->BeginSend(sendData, 0, sendData->Length, SocketFlags::None, gcnew AsyncCallback(this, &ChessServerForm::SendCallback), EachSocket/*nullptr*/);
+				}
+			}
+			
+			buffer = gcnew array<Byte>(current->ReceiveBufferSize);
+			current->BeginReceive(buffer, 0, buffer->Length, SocketFlags::None, gcnew AsyncCallback(this, &ChessServerForm::ReceiveCallback), current);
+			
 		}
 		catch (SocketException^ ex)
 		{
 			ShowErrorDialog(ex->Message);
+			current->Close();
+			clientSockets->Remove(current);
+			return;
 		}
 		catch (ObjectDisposedException^ ex)
 		{
@@ -228,8 +247,14 @@ namespace CHChessServer {
 	
 		this->BeginInvoke(callback, textBox2->Text);
 
-		clientSocket->BeginSend(sendData, 0, sendData->Length, SocketFlags::None, gcnew AsyncCallback(this, &ChessServerForm::SendCallback), nullptr);
-		
+		//clientSocket->BeginSend(sendData, 0, sendData->Length, SocketFlags::None, gcnew AsyncCallback(this, &ChessServerForm::SendCallback), nullptr);
+		for each(Socket^ EachSocket in clientSockets){
+			//最後一個參數不可為nullptr，原因為雖然此函數看起來已經明確定哪個client呼叫的，
+			//但是裡面的callback function並不知道是哪個client，因為有可能同時多個事件都觸發到callback function，所以要定義狀態來告訴callback現在是哪個client
+			EachSocket->BeginSend(sendData, 0, sendData->Length, SocketFlags::None, gcnew AsyncCallback(this, &ChessServerForm::SendCallback), EachSocket/*nullptr*/);
+																																				
+		}
+
 	}
 	};
 }

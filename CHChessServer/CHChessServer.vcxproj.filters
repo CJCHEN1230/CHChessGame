@@ -46,10 +46,18 @@
     <ClCompile Include="ChessServerForm.cpp">
       <Filter>原始程式檔</Filter>
     </ClCompile>
+    <ClCompile Include="ChineseChessGame.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="app.ico">
       <Filter>資源檔</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ChessServerForm.resx">
+      <Filter>資源檔</Filter>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>
