@@ -5,6 +5,7 @@
 using namespace System;
 using namespace CHChessClient;
 
+[STAThread]
 int main(array<System::String ^> ^args)
 {
     Console::WriteLine(L"Hello World");
