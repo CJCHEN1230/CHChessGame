@@ -22,7 +22,7 @@ namespace CHChessClient {
 		unsigned short y;
 		bool color;
 	public:
-		virtual List<Point>^ GetMoveList(array<Chessman^, 2>^ AllChess) = 0;
+		virtual List<Point>^ GetMoveList(array<Chessman^, 2>^ ChessboardState) = 0;
 
 		unsigned short GetX() { return x; }
 		void SetX(unsigned short X) { this->x = X; }
@@ -93,7 +93,7 @@ namespace CHChessClient {
 	{
 	public:
 		Chessman_King(unsigned short X, unsigned short Y, bool COLOR) :Chessman(X, Y, COLOR) { Name = "King"; }
-		virtual List<Point>^ GetMoveList(array<Chessman^, 2>^ AllChess) override{
+		virtual List<Point>^ GetMoveList(array<Chessman^, 2>^ ChessboardState) override{
 
 			List<Point>^ CoordinateList = gcnew List<Point>();
 			List<Point>^ TempList = gcnew List<Point>();
@@ -108,7 +108,7 @@ namespace CHChessClient {
 				//篩選候選位置的範圍
 				if (EachPoint->X>2 && EachPoint->X<6 && EachPoint->Y<3 && EachPoint->Y>-1) {
 					//檢查候選位置有沒有空，如果沒有空則判斷顏色必須要不同才能放置
-					if (AllChess[EachPoint->X, EachPoint->Y] == nullptr||AllChess[EachPoint->X, EachPoint->Y]->GetColor() != this->GetColor()) {
+					if (ChessboardState[EachPoint->X, EachPoint->Y] == nullptr||ChessboardState[EachPoint->X, EachPoint->Y]->GetColor() != this->GetColor()) {
 						CoordinateList->Add(*EachPoint);
 					}
 				}
@@ -122,7 +122,7 @@ namespace CHChessClient {
 	{
 	public:
 		Chessman_Advisors(unsigned short X, unsigned short Y, bool COLOR) :Chessman(X, Y, COLOR) { Name = "Advisors"; }
-		virtual List<Point>^ GetMoveList(array<Chessman^, 2>^ AllChess) override{
+		virtual List<Point>^ GetMoveList(array<Chessman^, 2>^ ChessboardState) override{
 
 			List<Point>^ CoordinateList = gcnew List<Point>();
 			List<Point>^ TempList = gcnew List<Point>();
@@ -137,7 +137,7 @@ namespace CHChessClient {
 				//篩選候選位置的範圍
 				if (EachPoint->X>2 && EachPoint->X<6 && EachPoint->Y<3 && EachPoint->Y>-1) {
 					//檢查候選位置有沒有空，如果沒有空則判斷顏色必須要不同才能放置
-					if (AllChess[EachPoint->X, EachPoint->Y] == nullptr || AllChess[EachPoint->X, EachPoint->Y]->GetColor() != this->GetColor()) {
+					if (ChessboardState[EachPoint->X, EachPoint->Y] == nullptr || ChessboardState[EachPoint->X, EachPoint->Y]->GetColor() != this->GetColor()) {
 						CoordinateList->Add(*EachPoint);
 					}
 				}
@@ -151,7 +151,7 @@ namespace CHChessClient {
 	{
 	public:
 		Chessman_Elephants(unsigned short X, unsigned short Y, bool COLOR) :Chessman(X, Y, COLOR) { Name = "Elephants"; }
-		virtual List<Point>^ GetMoveList(array<Chessman^, 2>^ AllChess) override {
+		virtual List<Point>^ GetMoveList(array<Chessman^, 2>^ ChessboardState) override {
 
 			List<Point>^ CoordinateList = gcnew List<Point>();
 			List<Point>^ TempList = gcnew List<Point>();
@@ -166,8 +166,8 @@ namespace CHChessClient {
 				//篩選候選位置的範圍
 				if (EachPoint->X>-1 && EachPoint->X<9 && EachPoint->Y<5 && EachPoint->Y>-1) {
 					//檢查候選位置有沒有空，如果沒有空則判斷顏色必須要不同才能放置
-					if (AllChess[EachPoint->X, EachPoint->Y] == nullptr || AllChess[EachPoint->X, EachPoint->Y]->GetColor() != this->GetColor()) {
-						if (AllChess[(EachPoint->X + this->x) / 2, (EachPoint->Y + this->y) / 2] == nullptr)//檢查拐象腳
+					if (ChessboardState[EachPoint->X, EachPoint->Y] == nullptr || ChessboardState[EachPoint->X, EachPoint->Y]->GetColor() != this->GetColor()) {
+						if (ChessboardState[(EachPoint->X + this->x) / 2, (EachPoint->Y + this->y) / 2] == nullptr)//檢查拐象腳
 							CoordinateList->Add(*EachPoint);
 					}
 				}
@@ -183,7 +183,7 @@ namespace CHChessClient {
 	{
 	public:
 		Chessman_Knights(unsigned short X, unsigned short Y, bool COLOR) :Chessman(X, Y, COLOR) { Name = "Knights"; }
-		virtual List<Point>^ GetMoveList(array<Chessman^, 2>^ AllChess) override {
+		virtual List<Point>^ GetMoveList(array<Chessman^, 2>^ ChessboardState) override {
 
 			List<Point>^ CoordinateList = gcnew List<Point>();
 			List<Point>^ TempList = gcnew List<Point>();
@@ -204,14 +204,14 @@ namespace CHChessClient {
 					//檢查候選位置有沒有空，如果沒有空則判斷顏色必須要不同才能放置
 
 
-					if (AllChess[EachPoint->X, EachPoint->Y] == nullptr || AllChess[EachPoint->X, EachPoint->Y]->GetColor() != this->GetColor()) {
+					if (ChessboardState[EachPoint->X, EachPoint->Y] == nullptr || ChessboardState[EachPoint->X, EachPoint->Y]->GetColor() != this->GetColor()) {
 						if (Math::Abs(EachPoint->X - this->x) == 2) {//檢查拐馬腳
-							if (AllChess[(EachPoint->X + this->x) / 2, this->y] == nullptr) {
+							if (ChessboardState[(EachPoint->X + this->x) / 2, this->y] == nullptr) {
 								CoordinateList->Add(*EachPoint);
 							}
 						}
 						else {
-							if (AllChess[this->x,(EachPoint->Y + this->y) / 2 ] == nullptr) {
+							if (ChessboardState[this->x,(EachPoint->Y + this->y) / 2 ] == nullptr) {
 								CoordinateList->Add(*EachPoint);
 							}
 						}
@@ -227,16 +227,16 @@ namespace CHChessClient {
 	{
 	public:
 		Chessman_Rooks(unsigned short X, unsigned short Y, bool COLOR) :Chessman(X, Y, COLOR) { Name = "Rooks"; }
-		virtual List<Point>^ GetMoveList(array<Chessman^, 2>^ AllChess) override {
+		virtual List<Point>^ GetMoveList(array<Chessman^, 2>^ ChessboardState) override {
 
 			List<Point>^ CoordinateList = gcnew List<Point>();
 			List<Point>^ TempList = gcnew List<Point>();
 
 			for (int i = this->x + 1; i < 9; i++) {
-				if (AllChess[i, this->y] == nullptr) {
+				if (ChessboardState[i, this->y] == nullptr) {
 					CoordinateList->Add(Point(i, this->y));
 				}
-				else if (AllChess[i, this->y]->GetColor() != this->GetColor())
+				else if (ChessboardState[i, this->y]->GetColor() != this->GetColor())
 				{
 					CoordinateList->Add(Point(i, this->y));
 					break;
@@ -246,10 +246,10 @@ namespace CHChessClient {
 			}
 
 			for (int i = this->x - 1; i > -1; i--) {
-				if (AllChess[i, this->y] == nullptr) {
+				if (ChessboardState[i, this->y] == nullptr) {
 					CoordinateList->Add(Point(i, this->y));
 				}
-				else if (AllChess[i, this->y]->GetColor() != this->GetColor())
+				else if (ChessboardState[i, this->y]->GetColor() != this->GetColor())
 				{
 					CoordinateList->Add(Point(i, this->y));
 					break;
@@ -259,10 +259,10 @@ namespace CHChessClient {
 			}
 
 			for (int j = this->y + 1; j < 10; j++) {
-				if (AllChess[this->x, j] == nullptr) {
+				if (ChessboardState[this->x, j] == nullptr) {
 					CoordinateList->Add(Point(this->x, j));
 				}
-				else if (AllChess[this->x, j]->GetColor() != this->GetColor())
+				else if (ChessboardState[this->x, j]->GetColor() != this->GetColor())
 				{
 					CoordinateList->Add(Point(this->x, j));
 					break;
@@ -272,10 +272,10 @@ namespace CHChessClient {
 			}
 
 			for (int j = this->y - 1; j > -1; j--) {
-				if (AllChess[this->x, j] == nullptr) {
+				if (ChessboardState[this->x, j] == nullptr) {
 					CoordinateList->Add(Point(this->x, j));
 				}
-				else if (AllChess[this->x, j]->GetColor() != this->GetColor())
+				else if (ChessboardState[this->x, j]->GetColor() != this->GetColor())
 				{
 					CoordinateList->Add(Point(this->x, j));
 					break;
@@ -293,21 +293,22 @@ namespace CHChessClient {
 	{
 	public:
 		Chessman_Cannons(unsigned short X, unsigned short Y, bool COLOR) :Chessman(X, Y, COLOR) { Name = "Cannons"; }
-		virtual List<Point>^ GetMoveList(array<Chessman^, 2>^ AllChess) override {
+		virtual List<Point>^ GetMoveList(array<Chessman^, 2>^ ChessboardState) override {
 
 			List<Point>^ CoordinateList = gcnew List<Point>();
 			List<Point>^ TempList = gcnew List<Point>();
 
 			for (int i = this->x + 1; i < 9; i++) {
-				if (AllChess[i, this->y] == nullptr) {
+				if (ChessboardState[i, this->y] == nullptr) {
 					CoordinateList->Add(Point(i, this->y));
 				}
 				else {
 					for (i = i + 1; i < 9; i++) {
-						if (AllChess[i, this->y] == nullptr)
+						if (ChessboardState[i, this->y] == nullptr)
 							continue;
-						else if (AllChess[i, this->y]->GetColor() != this->GetColor()) {
+						else if (ChessboardState[i, this->y]->GetColor() != this->GetColor()) {
 							CoordinateList->Add(Point(i, this->y));
+							i = 9;
 							break;
 						}
 					}
@@ -316,16 +317,17 @@ namespace CHChessClient {
 			}
 
 			for (int i = this->x - 1; i > -1; i--) {
-				if (AllChess[i, this->y] == nullptr) {
+				if (ChessboardState[i, this->y] == nullptr) {
 					CoordinateList->Add(Point(i, this->y));
 				}
 				else 
 				{
 					for (i = i - 1; i > -1; i--) {
-						if (AllChess[i, this->y] == nullptr)
+						if (ChessboardState[i, this->y] == nullptr)
 							continue;
-						else if(AllChess[i, this->y]->GetColor() != this->GetColor()) {														
+						else if(ChessboardState[i, this->y]->GetColor() != this->GetColor()) {														
 							CoordinateList->Add(Point(i, this->y));
+							i = -1;
 							break;
 						}
 					}
@@ -334,15 +336,16 @@ namespace CHChessClient {
 			}
 
 			for (int j = this->y + 1; j < 10; j++) {
-				if (AllChess[this->x, j] == nullptr) {
+				if (ChessboardState[this->x, j] == nullptr) {
 					CoordinateList->Add(Point(this->x, j));
 				}
 				else {
 					for (j = j + 1; j <10; j++) {
-						if (AllChess[this->x, j] == nullptr)
+						if (ChessboardState[this->x, j] == nullptr)
 							continue;
-						else if (AllChess[this->x, j]->GetColor() != this->GetColor()) {
+						else if (ChessboardState[this->x, j]->GetColor() != this->GetColor()) {
 							CoordinateList->Add(Point(this->x, j));
+							j = 10;
 							break;
 						}
 					}
@@ -352,15 +355,16 @@ namespace CHChessClient {
 			}
 
 			for (int j = this->y - 1; j > -1; j--) {
-				if (AllChess[this->x, j] == nullptr) {
+				if (ChessboardState[this->x, j] == nullptr) {
 					CoordinateList->Add(Point(this->x, j));
 				}
 				else {
 					for (j = j - 1; j > -1; j--) {
-						if (AllChess[this->x, j] == nullptr)
+						if (ChessboardState[this->x, j] == nullptr)
 							continue;
-						else if (AllChess[this->x, j]->GetColor() != this->GetColor()) {
+						else if (ChessboardState[this->x, j]->GetColor() != this->GetColor()) {
 							CoordinateList->Add(Point(this->x, j));
+							j = -1;
 							break;
 						}
 					}
@@ -373,13 +377,12 @@ namespace CHChessClient {
 			return CoordinateList;
 		}
 	};
-
 	//卒兵
 	public ref class Chessman_Soldiers :public Chessman
 	{
 	public:
 		Chessman_Soldiers(unsigned short X, unsigned short Y, bool COLOR) :Chessman(X, Y, COLOR) { Name = "soldiers"; }
-		virtual List<Point>^ GetMoveList(array<Chessman^, 2>^ AllChess) override {
+		virtual List<Point>^ GetMoveList(array<Chessman^, 2>^ ChessboardState) override {
 
 			List<Point>^ CoordinateList = gcnew List<Point>();
 
@@ -397,7 +400,7 @@ namespace CHChessClient {
 				//篩選候選位置的範圍
 				if (EachPoint->X>-1 && EachPoint->X<9 && EachPoint->Y<10 && EachPoint->Y>2) {
 					//檢查候選位置有沒有空，如果沒有空則判斷顏色必須要不同才能放置
-					if (AllChess[EachPoint->X, EachPoint->Y] == nullptr || AllChess[EachPoint->X, EachPoint->Y]->GetColor() != this->GetColor()) {
+					if (ChessboardState[EachPoint->X, EachPoint->Y] == nullptr || ChessboardState[EachPoint->X, EachPoint->Y]->GetColor() != this->GetColor()) {
 						CoordinateList->Add(*EachPoint);
 					}
 				}
@@ -407,15 +410,25 @@ namespace CHChessClient {
 		}
 	};
 
+	public enum class PlayerState : int { Player1, Player2, Watching};
+
+	public enum class ChessCharacter : int { BKing, BAdvisors, BElephants, BRooks, BKnights, BCannons, Bsoldiers, GKing, GAdvisors, GElephants, GRooks, GKnights, GCannons, Gsoldiers };
+
 	public ref class Player
 	{
 	private:
 		String^ Name;
 		Socket^ socket;
-		bool State; //可不可以移動棋子
+		PlayerState State;
+		bool ISMoving;
 	public:
-		Player(String^ name2, Socket^ socket2, bool State2):Name(name2), socket(socket2), State(State2){}
+		Player(String^ name2, Socket^ socket2, PlayerState playerstate, bool CanMoving):Name(name2), socket(socket2), State(playerstate), ISMoving(CanMoving){}
 
+		PlayerState GetPlayerState() { return State; }
+		void SetPlayerState(PlayerState State2) { State = State2; }
+
+		bool GetISMoving() { return ISMoving; }
+		void SetISMoving(bool ISMoving2) { ISMoving = ISMoving2; }
 
 		String^ GetName() { return Name; }
 		void SetName(String^ Name2) { Name = Name2; }
@@ -431,29 +444,30 @@ namespace CHChessClient {
 
 	private:
 		//String Winner;
-	
+		/*Player player1;
+		Player player2;*/
 	
 	public:
-		array<Chessman^, 2>^ AllChess ; //整個棋盤狀況
+		array<Chessman^, 2>^ ChessboardState ; //整個棋盤狀況
 
 		Game() {
-			AllChess = gcnew array<Chessman^, 2>(9, 10); //整個棋盤狀況
-			AllChess[3, 0] = gcnew Chessman_Advisors(3, 0, true);
-			AllChess[5, 0] = gcnew Chessman_Advisors(5, 0, true);/**/
-			AllChess[4, 0] = gcnew Chessman_King(4, 0, true);
-			AllChess[8, 5] = gcnew Chessman_Advisors(8, 5, true);
-			AllChess[2, 0] = gcnew Chessman_Elephants(2, 0, true);
-			AllChess[1, 0] = gcnew Chessman_Knights(1, 0, true);
-			AllChess[0, 0] = gcnew Chessman_Rooks(0, 0, true);
-			AllChess[1, 2] = gcnew Chessman_Cannons(1, 2, true);
-			AllChess[0, 3] = gcnew Chessman_Soldiers(0, 3, true);
-			AllChess[2, 3] = gcnew Chessman_Soldiers(2, 3, true);
-			AllChess[4, 3] = gcnew Chessman_Soldiers(4, 3, true);
-			AllChess[6, 3] = gcnew Chessman_Soldiers(6, 3, true);
+			ChessboardState = gcnew array<Chessman^, 2>(9, 10); //整個棋盤狀況
+			ChessboardState[3, 0] = gcnew Chessman_Advisors(3, 0, true);
+			ChessboardState[5, 0] = gcnew Chessman_Advisors(5, 0, true);/**/
+			ChessboardState[4, 0] = gcnew Chessman_King(4, 0, true);
+			ChessboardState[8, 5] = gcnew Chessman_Advisors(8, 5, true);
+			ChessboardState[2, 0] = gcnew Chessman_Elephants(2, 0, true);
+			ChessboardState[1, 0] = gcnew Chessman_Knights(1, 0, true);
+			ChessboardState[0, 0] = gcnew Chessman_Rooks(0, 0, true);
+			ChessboardState[1, 2] = gcnew Chessman_Cannons(1, 2, true);
+			ChessboardState[0, 3] = gcnew Chessman_Soldiers(0, 3, true);
+			ChessboardState[2, 3] = gcnew Chessman_Soldiers(2, 3, true);
+			ChessboardState[4, 3] = gcnew Chessman_Soldiers(4, 3, true);
+			ChessboardState[6, 3] = gcnew Chessman_Soldiers(6, 3, true);
 
-			AllChess[3, 4] = gcnew Chessman_Rooks(3, 4, false);
+			ChessboardState[3, 4] = gcnew Chessman_Rooks(3, 4, false);
 
-			AllChess[5, 4] = gcnew Chessman_Knights(5, 4, false);
+			ChessboardState[5, 4] = gcnew Chessman_Knights(5, 4, false);
 		}
 
 
