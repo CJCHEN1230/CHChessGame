@@ -1,5 +1,5 @@
 ﻿#pragma once
-
+#include "ChineseChessGame.h"
 namespace CHChessClient {
 
 	using namespace System;
@@ -25,6 +25,8 @@ namespace CHChessClient {
 			//TODO:  在此加入建構函式程式碼
 			//
 			
+			FirstGame = gcnew Game();
+
 
 			AllPB= gcnew array<PictureBox^, 2>(9, 10);
 
@@ -32,15 +34,16 @@ namespace CHChessClient {
 			AllPB[0, 0] = PB00; AllPB[0, 1] = PB01; AllPB[0, 2] = PB02; AllPB[0, 3] = PB03; AllPB[0, 4] = PB04; AllPB[0, 5] = PB05; AllPB[0, 6] = PB06; AllPB[0, 7] = PB07; AllPB[0, 8] = PB08; AllPB[0, 9] = PB09;
 			AllPB[1, 0] = PB10; AllPB[1, 1] = PB11; AllPB[1, 2] = PB12; AllPB[1, 3] = PB13; AllPB[1, 4] = PB14; AllPB[1, 5] = PB15; AllPB[1, 6] = PB16; AllPB[1, 7] = PB17; AllPB[1, 8] = PB18; AllPB[1, 9] = PB19;
 			AllPB[2, 0] = PB20; AllPB[2, 1] = PB21; AllPB[2, 2] = PB22; AllPB[2, 3] = PB23; AllPB[2, 4] = PB24; AllPB[2, 5] = PB25; AllPB[2, 6] = PB26; AllPB[2, 7] = PB27; AllPB[2, 8] = PB28; AllPB[2, 9] = PB29;
-			AllPB[3, 0] = PB00; AllPB[3, 1] = PB31; AllPB[3, 2] = PB32; AllPB[3, 3] = PB33; AllPB[3, 4] = PB34; AllPB[3, 5] = PB35; AllPB[3, 6] = PB36; AllPB[3, 7] = PB37; AllPB[3, 8] = PB38; AllPB[3, 9] = PB39;
-			AllPB[4, 0] = PB00; AllPB[4, 1] = PB41; AllPB[4, 2] = PB42; AllPB[4, 3] = PB43; AllPB[4, 4] = PB44; AllPB[4, 5] = PB45; AllPB[4, 6] = PB46; AllPB[4, 7] = PB47; AllPB[4, 8] = PB48; AllPB[4, 9] = PB49;
-			AllPB[5, 0] = PB00; AllPB[5, 1] = PB51; AllPB[5, 2] = PB52; AllPB[5, 3] = PB53; AllPB[5, 4] = PB54; AllPB[5, 5] = PB55; AllPB[5, 6] = PB56; AllPB[5, 7] = PB57; AllPB[5, 8] = PB58; AllPB[5, 9] = PB59;
-			AllPB[6, 0] = PB00; AllPB[6, 1] = PB61; AllPB[6, 2] = PB62; AllPB[6, 3] = PB63; AllPB[6, 4] = PB64; AllPB[6, 5] = PB65; AllPB[6, 6] = PB66; AllPB[6, 7] = PB67; AllPB[6, 8] = PB68; AllPB[6, 9] = PB69;
-			AllPB[7, 0] = PB00; AllPB[7, 1] = PB71; AllPB[7, 2] = PB72; AllPB[7, 3] = PB73; AllPB[7, 4] = PB74; AllPB[7, 5] = PB75; AllPB[7, 6] = PB76; AllPB[7, 7] = PB77; AllPB[7, 8] = PB78; AllPB[7, 9] = PB79;
-			AllPB[8, 0] = PB00; AllPB[8, 1] = PB81; AllPB[8, 2] = PB82; AllPB[8, 3] = PB83; AllPB[8, 4] = PB84; AllPB[8, 5] = PB85; AllPB[8, 6] = PB86; AllPB[8, 7] = PB87; AllPB[8, 8] = PB88; AllPB[8, 9] = PB89;
+			AllPB[3, 0] = PB30; AllPB[3, 1] = PB31; AllPB[3, 2] = PB32; AllPB[3, 3] = PB33; AllPB[3, 4] = PB34; AllPB[3, 5] = PB35; AllPB[3, 6] = PB36; AllPB[3, 7] = PB37; AllPB[3, 8] = PB38; AllPB[3, 9] = PB39;
+			AllPB[4, 0] = PB40; AllPB[4, 1] = PB41; AllPB[4, 2] = PB42; AllPB[4, 3] = PB43; AllPB[4, 4] = PB44; AllPB[4, 5] = PB45; AllPB[4, 6] = PB46; AllPB[4, 7] = PB47; AllPB[4, 8] = PB48; AllPB[4, 9] = PB49;
+			AllPB[5, 0] = PB50; AllPB[5, 1] = PB51; AllPB[5, 2] = PB52; AllPB[5, 3] = PB53; AllPB[5, 4] = PB54; AllPB[5, 5] = PB55; AllPB[5, 6] = PB56; AllPB[5, 7] = PB57; AllPB[5, 8] = PB58; AllPB[5, 9] = PB59;
+			AllPB[6, 0] = PB60; AllPB[6, 1] = PB61; AllPB[6, 2] = PB62; AllPB[6, 3] = PB63; AllPB[6, 4] = PB64; AllPB[6, 5] = PB65; AllPB[6, 6] = PB66; AllPB[6, 7] = PB67; AllPB[6, 8] = PB68; AllPB[6, 9] = PB69;
+			AllPB[7, 0] = PB70; AllPB[7, 1] = PB71; AllPB[7, 2] = PB72; AllPB[7, 3] = PB73; AllPB[7, 4] = PB74; AllPB[7, 5] = PB75; AllPB[7, 6] = PB76; AllPB[7, 7] = PB77; AllPB[7, 8] = PB78; AllPB[7, 9] = PB79;
+			AllPB[8, 0] = PB80; AllPB[8, 1] = PB81; AllPB[8, 2] = PB82; AllPB[8, 3] = PB83; AllPB[8, 4] = PB84; AllPB[8, 5] = PB85; AllPB[8, 6] = PB86; AllPB[8, 7] = PB87; AllPB[8, 8] = PB88; AllPB[8, 9] = PB89;
 		
-
-
+			//讓聊天室滑到底部
+			ChatTB->SelectionStart = ChatTB->Text->Length;
+			ChatTB->ScrollToCaret();
 			
 			for (unsigned int i = 0; i < 9; i++) {
 				for (unsigned int j = 0; j < 10; j++) {
@@ -50,7 +53,8 @@ namespace CHChessClient {
 					AllPB[i, j]->DragDrop += gcnew DragEventHandler(this, &ChessClientForm::PB00_DragDrop);
 				}			
 			}
-	
+			ChatTB->SelectionStart = ChatTB->Text->Length;
+			ChatTB->ScrollToCaret();
 			//this->ChessboardPanel->Controls->Add(this->pictureBox1, 8, 4);
 			//ChessboardPanel->GetType()->GetProperty("DoubleBuffered", System::Reflection::BindingFlags::Instance | System::Reflection::BindingFlags::NonPublic)->SetValue(ChessboardPanel, true, nullptr);
 
@@ -76,21 +80,25 @@ namespace CHChessClient {
 		/// <summary>
 		/// 設計工具所需的變數。
 
-		PictureBox^ MouseDown;
+		Game^ FirstGame;
+		PictureBox^ MouseDownPB;
 		array<PictureBox^, 2>^ AllPB ;
 		Socket^ clientSocket;
 		String^ Name;
+/*暫時*/String^ Color;
 		array<Byte>^ buffer;
+
 		bool drag = false;   // 記錄是否可拖曳，預設為不可
 		int sX, sY;         // 記錄滑鼠按下時的座標値
 	private: System::Windows::Forms::Button^  send;
 	private: System::Windows::Forms::Button^  button1;
-	private: System::Windows::Forms::TextBox^  textBox1;
+	private: System::Windows::Forms::TextBox^  ChatTB;
+
 	private: System::Windows::Forms::TextBox^  textBox2;
 
 
 
-	private: System::Windows::Forms::PictureBox^  PB09;
+	
 
 
 
@@ -115,32 +123,8 @@ namespace CHChessClient {
 	private: System::Windows::Forms::PictureBox^  PB11;
 	private: System::Windows::Forms::PictureBox^  PB01;
 	private: System::Windows::Forms::PictureBox^  PB82;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	private: System::Windows::Forms::PictureBox^  PB72;
-
+	private: System::Windows::Forms::PictureBox^  PB09;
 	private: System::Windows::Forms::PictureBox^  PB62;
 
 	private: System::Windows::Forms::PictureBox^  PB52;
@@ -151,133 +135,133 @@ namespace CHChessClient {
 
 	private: System::Windows::Forms::PictureBox^  PB22;
 
-private: System::Windows::Forms::PictureBox^  PB12;
+	private: System::Windows::Forms::PictureBox^  PB12;
 
-private: System::Windows::Forms::PictureBox^  PB02;
-private: System::Windows::Forms::PictureBox^  PB83;
+	private: System::Windows::Forms::PictureBox^  PB02;
 
+	private: System::Windows::Forms::PictureBox^  PB83;
 
-private: System::Windows::Forms::PictureBox^  PB73;
+	private: System::Windows::Forms::PictureBox^  PB73;
 
-private: System::Windows::Forms::PictureBox^  PB63;
+	private: System::Windows::Forms::PictureBox^  PB63;
 
-private: System::Windows::Forms::PictureBox^  PB53;
+	private: System::Windows::Forms::PictureBox^  PB53;
 
-private: System::Windows::Forms::PictureBox^  PB43;
+	private: System::Windows::Forms::PictureBox^  PB43;
 
-private: System::Windows::Forms::PictureBox^  PB33;
+	private: System::Windows::Forms::PictureBox^  PB33;
 
-private: System::Windows::Forms::PictureBox^  PB23;
+	private: System::Windows::Forms::PictureBox^  PB23;
 
-private: System::Windows::Forms::PictureBox^  PB13;
+	private: System::Windows::Forms::PictureBox^  PB13;
 
-private: System::Windows::Forms::PictureBox^  PB03;
-private: System::Windows::Forms::PictureBox^  PB84;
-
-
-private: System::Windows::Forms::PictureBox^  PB74;
-
-private: System::Windows::Forms::PictureBox^  PB64;
-
-private: System::Windows::Forms::PictureBox^  PB54;
-
-private: System::Windows::Forms::PictureBox^  PB44;
-
-private: System::Windows::Forms::PictureBox^  PB34;
-
-private: System::Windows::Forms::PictureBox^  PB24;
-
-private: System::Windows::Forms::PictureBox^  PB14;
-
-private: System::Windows::Forms::PictureBox^  PB04;
-private: System::Windows::Forms::PictureBox^  PB85;
+	private: System::Windows::Forms::PictureBox^  PB03;
+	private: System::Windows::Forms::PictureBox^  PB84;
 
 
-private: System::Windows::Forms::PictureBox^  PB75;
+	private: System::Windows::Forms::PictureBox^  PB74;
 
-private: System::Windows::Forms::PictureBox^  PB65;
+	private: System::Windows::Forms::PictureBox^  PB64;
 
-private: System::Windows::Forms::PictureBox^  PB55;
+	private: System::Windows::Forms::PictureBox^  PB54;
 
-private: System::Windows::Forms::PictureBox^  PB45;
+	private: System::Windows::Forms::PictureBox^  PB44;
 
-private: System::Windows::Forms::PictureBox^  PB35;
+	private: System::Windows::Forms::PictureBox^  PB34;
 
-private: System::Windows::Forms::PictureBox^  PB25;
+	private: System::Windows::Forms::PictureBox^  PB24;
 
-private: System::Windows::Forms::PictureBox^  PB15;
+	private: System::Windows::Forms::PictureBox^  PB14;
 
-private: System::Windows::Forms::PictureBox^  PB05;
-private: System::Windows::Forms::PictureBox^  PB86;
+	private: System::Windows::Forms::PictureBox^  PB04;
+
+	private: System::Windows::Forms::PictureBox^  PB85;
+
+	private: System::Windows::Forms::PictureBox^  PB75;
+
+	private: System::Windows::Forms::PictureBox^  PB65;
+
+	private: System::Windows::Forms::PictureBox^  PB55;
+
+	private: System::Windows::Forms::PictureBox^  PB45;
+
+	private: System::Windows::Forms::PictureBox^  PB35;
+
+	private: System::Windows::Forms::PictureBox^  PB25;
+
+	private: System::Windows::Forms::PictureBox^  PB15;
+
+	private: System::Windows::Forms::PictureBox^  PB05;
+
+	private: System::Windows::Forms::PictureBox^  PB86;
+
+	private: System::Windows::Forms::PictureBox^  PB76;
+
+	private: System::Windows::Forms::PictureBox^  PB66;
+
+	private: System::Windows::Forms::PictureBox^  PB56;
+
+	private: System::Windows::Forms::PictureBox^  PB46;
+
+	private: System::Windows::Forms::PictureBox^  PB36;
+
+	private: System::Windows::Forms::PictureBox^  PB26;
+
+	private: System::Windows::Forms::PictureBox^  PB16;
+
+	private: System::Windows::Forms::PictureBox^  PB06;
+
+	private: System::Windows::Forms::PictureBox^  PB87;
+
+	private: System::Windows::Forms::PictureBox^  PB77;
+
+	private: System::Windows::Forms::PictureBox^  PB67;
+
+	private: System::Windows::Forms::PictureBox^  PB57;
+
+	private: System::Windows::Forms::PictureBox^  PB47;
+
+	private: System::Windows::Forms::PictureBox^  PB37;
+
+	private: System::Windows::Forms::PictureBox^  PB27;
+
+	private: System::Windows::Forms::PictureBox^  PB17;
+
+	private: System::Windows::Forms::PictureBox^  PB07;
+
+	private: System::Windows::Forms::PictureBox^  PB88;
+
+	private: System::Windows::Forms::PictureBox^  PB78;
+
+	private: System::Windows::Forms::PictureBox^  PB68;
+
+	private: System::Windows::Forms::PictureBox^  PB58;
+
+	private: System::Windows::Forms::PictureBox^  PB48;
+
+	private: System::Windows::Forms::PictureBox^  PB38;
+
+	private: System::Windows::Forms::PictureBox^  PB28;
+
+	private: System::Windows::Forms::PictureBox^  PB18;
+
+	private: System::Windows::Forms::PictureBox^  PB08;
+	private: System::Windows::Forms::PictureBox^  PB89;
 
 
-private: System::Windows::Forms::PictureBox^  PB76;
+	private: System::Windows::Forms::PictureBox^  PB79;
 
-private: System::Windows::Forms::PictureBox^  PB66;
+	private: System::Windows::Forms::PictureBox^  PB69;
 
-private: System::Windows::Forms::PictureBox^  PB56;
+	private: System::Windows::Forms::PictureBox^  PB59;
 
-private: System::Windows::Forms::PictureBox^  PB46;
+	private: System::Windows::Forms::PictureBox^  PB49;
 
-private: System::Windows::Forms::PictureBox^  PB36;
+	private: System::Windows::Forms::PictureBox^  PB39;
 
-private: System::Windows::Forms::PictureBox^  PB26;
+	private: System::Windows::Forms::PictureBox^  PB29;
 
-private: System::Windows::Forms::PictureBox^  PB16;
-
-private: System::Windows::Forms::PictureBox^  PB06;
-private: System::Windows::Forms::PictureBox^  PB87;
-
-
-private: System::Windows::Forms::PictureBox^  PB77;
-
-private: System::Windows::Forms::PictureBox^  PB67;
-
-private: System::Windows::Forms::PictureBox^  PB57;
-
-private: System::Windows::Forms::PictureBox^  PB47;
-
-private: System::Windows::Forms::PictureBox^  PB37;
-
-private: System::Windows::Forms::PictureBox^  PB27;
-
-private: System::Windows::Forms::PictureBox^  PB17;
-
-private: System::Windows::Forms::PictureBox^  PB07;
-private: System::Windows::Forms::PictureBox^  PB88;
-
-
-private: System::Windows::Forms::PictureBox^  PB78;
-
-private: System::Windows::Forms::PictureBox^  PB68;
-
-private: System::Windows::Forms::PictureBox^  PB58;
-
-private: System::Windows::Forms::PictureBox^  PB48;
-
-private: System::Windows::Forms::PictureBox^  PB38;
-
-private: System::Windows::Forms::PictureBox^  PB28;
-
-private: System::Windows::Forms::PictureBox^  PB18;
-
-private: System::Windows::Forms::PictureBox^  PB08;
-private: System::Windows::Forms::PictureBox^  PB89;
-
-
-private: System::Windows::Forms::PictureBox^  PB79;
-
-private: System::Windows::Forms::PictureBox^  PB69;
-
-private: System::Windows::Forms::PictureBox^  PB59;
-
-private: System::Windows::Forms::PictureBox^  PB49;
-
-private: System::Windows::Forms::PictureBox^  PB39;
-
-private: System::Windows::Forms::PictureBox^  PB29;
-
-private: System::Windows::Forms::PictureBox^  PB19;
+	private: System::Windows::Forms::PictureBox^  PB19;
 
 
 
@@ -298,10 +282,11 @@ private: System::Windows::Forms::PictureBox^  PB19;
 			System::ComponentModel::ComponentResourceManager^  resources = (gcnew System::ComponentModel::ComponentResourceManager(ChessClientForm::typeid));
 			this->send = (gcnew System::Windows::Forms::Button());
 			this->button1 = (gcnew System::Windows::Forms::Button());
-			this->textBox1 = (gcnew System::Windows::Forms::TextBox());
+			this->ChatTB = (gcnew System::Windows::Forms::TextBox());
 			this->textBox2 = (gcnew System::Windows::Forms::TextBox());
 			this->PB09 = (gcnew System::Windows::Forms::PictureBox());
 			this->Chessboardpanel = (gcnew System::Windows::Forms::Panel());
+			this->PB55 = (gcnew System::Windows::Forms::PictureBox());
 			this->PB80 = (gcnew System::Windows::Forms::PictureBox());
 			this->PB70 = (gcnew System::Windows::Forms::PictureBox());
 			this->PB60 = (gcnew System::Windows::Forms::PictureBox());
@@ -350,7 +335,6 @@ private: System::Windows::Forms::PictureBox^  PB19;
 			this->PB85 = (gcnew System::Windows::Forms::PictureBox());
 			this->PB75 = (gcnew System::Windows::Forms::PictureBox());
 			this->PB65 = (gcnew System::Windows::Forms::PictureBox());
-			this->PB55 = (gcnew System::Windows::Forms::PictureBox());
 			this->PB45 = (gcnew System::Windows::Forms::PictureBox());
 			this->PB35 = (gcnew System::Windows::Forms::PictureBox());
 			this->PB25 = (gcnew System::Windows::Forms::PictureBox());
@@ -393,6 +377,7 @@ private: System::Windows::Forms::PictureBox^  PB19;
 			this->PB19 = (gcnew System::Windows::Forms::PictureBox());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->PB09))->BeginInit();
 			this->Chessboardpanel->SuspendLayout();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->PB55))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->PB80))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->PB70))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->PB60))->BeginInit();
@@ -441,7 +426,6 @@ private: System::Windows::Forms::PictureBox^  PB19;
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->PB85))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->PB75))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->PB65))->BeginInit();
-			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->PB55))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->PB45))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->PB35))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->PB25))->BeginInit();
@@ -504,15 +488,15 @@ private: System::Windows::Forms::PictureBox^  PB19;
 			this->button1->UseVisualStyleBackColor = true;
 			this->button1->Click += gcnew System::EventHandler(this, &ChessClientForm::button1_Click);
 			// 
-			// textBox1
+			// ChatTB
 			// 
-			this->textBox1->Location = System::Drawing::Point(803, 30);
-			this->textBox1->Multiline = true;
-			this->textBox1->Name = L"textBox1";
-			this->textBox1->ScrollBars = System::Windows::Forms::ScrollBars::Vertical;
-			this->textBox1->Size = System::Drawing::Size(208, 230);
-			this->textBox1->TabIndex = 2;
-			this->textBox1->TextChanged += gcnew System::EventHandler(this, &ChessClientForm::textBox1_TextChanged);
+			this->ChatTB->Location = System::Drawing::Point(796, 73);
+			this->ChatTB->Multiline = true;
+			this->ChatTB->Name = L"ChatTB";
+			this->ChatTB->ScrollBars = System::Windows::Forms::ScrollBars::Vertical;
+			this->ChatTB->Size = System::Drawing::Size(208, 230);
+			this->ChatTB->TabIndex = 2;
+			this->ChatTB->TextChanged += gcnew System::EventHandler(this, &ChessClientForm::textBox1_TextChanged);
 			// 
 			// textBox2
 			// 
@@ -536,6 +520,7 @@ private: System::Windows::Forms::PictureBox^  PB19;
 			// 
 			this->Chessboardpanel->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"Chessboardpanel.BackgroundImage")));
 			this->Chessboardpanel->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
+			this->Chessboardpanel->Controls->Add(this->PB55);
 			this->Chessboardpanel->Controls->Add(this->PB80);
 			this->Chessboardpanel->Controls->Add(this->PB70);
 			this->Chessboardpanel->Controls->Add(this->PB60);
@@ -584,7 +569,6 @@ private: System::Windows::Forms::PictureBox^  PB19;
 			this->Chessboardpanel->Controls->Add(this->PB85);
 			this->Chessboardpanel->Controls->Add(this->PB75);
 			this->Chessboardpanel->Controls->Add(this->PB65);
-			this->Chessboardpanel->Controls->Add(this->PB55);
 			this->Chessboardpanel->Controls->Add(this->PB45);
 			this->Chessboardpanel->Controls->Add(this->PB35);
 			this->Chessboardpanel->Controls->Add(this->PB25);
@@ -631,6 +615,17 @@ private: System::Windows::Forms::PictureBox^  PB19;
 			this->Chessboardpanel->Size = System::Drawing::Size(679, 723);
 			this->Chessboardpanel->TabIndex = 7;
 			// 
+			// PB55
+			// 
+			this->PB55->BackColor = System::Drawing::Color::Transparent;
+			this->PB55->BackgroundImageLayout = System::Windows::Forms::ImageLayout::None;
+			this->PB55->Location = System::Drawing::Point(382, 297);
+			this->PB55->Name = L"PB55";
+			this->PB55->Size = System::Drawing::Size(60, 60);
+			this->PB55->SizeMode = System::Windows::Forms::PictureBoxSizeMode::StretchImage;
+			this->PB55->TabIndex = 47;
+			this->PB55->TabStop = false;
+			// 
 			// PB80
 			// 
 			this->PB80->BackColor = System::Drawing::Color::Transparent;
@@ -668,6 +663,7 @@ private: System::Windows::Forms::PictureBox^  PB19;
 			// 
 			this->PB50->BackColor = System::Drawing::Color::Transparent;
 			this->PB50->BackgroundImageLayout = System::Windows::Forms::ImageLayout::None;
+			this->PB50->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"PB50.Image")));
 			this->PB50->Location = System::Drawing::Point(382, 647);
 			this->PB50->Name = L"PB50";
 			this->PB50->Size = System::Drawing::Size(60, 60);
@@ -679,6 +675,7 @@ private: System::Windows::Forms::PictureBox^  PB19;
 			// 
 			this->PB40->BackColor = System::Drawing::Color::Transparent;
 			this->PB40->BackgroundImageLayout = System::Windows::Forms::ImageLayout::None;
+			this->PB40->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"PB40.Image")));
 			this->PB40->Location = System::Drawing::Point(308, 647);
 			this->PB40->Name = L"PB40";
 			this->PB40->Size = System::Drawing::Size(60, 60);
@@ -690,6 +687,7 @@ private: System::Windows::Forms::PictureBox^  PB19;
 			// 
 			this->PB30->BackColor = System::Drawing::Color::Transparent;
 			this->PB30->BackgroundImageLayout = System::Windows::Forms::ImageLayout::None;
+			this->PB30->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"PB30.Image")));
 			this->PB30->Location = System::Drawing::Point(236, 647);
 			this->PB30->Name = L"PB30";
 			this->PB30->Size = System::Drawing::Size(60, 60);
@@ -701,6 +699,7 @@ private: System::Windows::Forms::PictureBox^  PB19;
 			// 
 			this->PB20->BackColor = System::Drawing::Color::Transparent;
 			this->PB20->BackgroundImageLayout = System::Windows::Forms::ImageLayout::None;
+			this->PB20->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"PB20.Image")));
 			this->PB20->Location = System::Drawing::Point(165, 647);
 			this->PB20->Name = L"PB20";
 			this->PB20->Size = System::Drawing::Size(60, 60);
@@ -712,6 +711,7 @@ private: System::Windows::Forms::PictureBox^  PB19;
 			// 
 			this->PB10->BackColor = System::Drawing::Color::Transparent;
 			this->PB10->BackgroundImageLayout = System::Windows::Forms::ImageLayout::None;
+			this->PB10->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"PB10.Image")));
 			this->PB10->Location = System::Drawing::Point(93, 647);
 			this->PB10->Name = L"PB10";
 			this->PB10->Size = System::Drawing::Size(60, 60);
@@ -914,6 +914,7 @@ private: System::Windows::Forms::PictureBox^  PB19;
 			// 
 			this->PB12->BackColor = System::Drawing::Color::Transparent;
 			this->PB12->BackgroundImageLayout = System::Windows::Forms::ImageLayout::None;
+			this->PB12->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"PB12.Image")));
 			this->PB12->Location = System::Drawing::Point(93, 506);
 			this->PB12->Name = L"PB12";
 			this->PB12->Size = System::Drawing::Size(60, 60);
@@ -958,6 +959,7 @@ private: System::Windows::Forms::PictureBox^  PB19;
 			// 
 			this->PB63->BackColor = System::Drawing::Color::Transparent;
 			this->PB63->BackgroundImageLayout = System::Windows::Forms::ImageLayout::None;
+			this->PB63->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"PB63.Image")));
 			this->PB63->Location = System::Drawing::Point(454, 431);
 			this->PB63->Name = L"PB63";
 			this->PB63->Size = System::Drawing::Size(60, 60);
@@ -980,6 +982,7 @@ private: System::Windows::Forms::PictureBox^  PB19;
 			// 
 			this->PB43->BackColor = System::Drawing::Color::Transparent;
 			this->PB43->BackgroundImageLayout = System::Windows::Forms::ImageLayout::None;
+			this->PB43->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"PB43.Image")));
 			this->PB43->Location = System::Drawing::Point(308, 431);
 			this->PB43->Name = L"PB43";
 			this->PB43->Size = System::Drawing::Size(60, 60);
@@ -1002,6 +1005,7 @@ private: System::Windows::Forms::PictureBox^  PB19;
 			// 
 			this->PB23->BackColor = System::Drawing::Color::Transparent;
 			this->PB23->BackgroundImageLayout = System::Windows::Forms::ImageLayout::None;
+			this->PB23->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"PB23.Image")));
 			this->PB23->Location = System::Drawing::Point(165, 431);
 			this->PB23->Name = L"PB23";
 			this->PB23->Size = System::Drawing::Size(60, 60);
@@ -1024,6 +1028,7 @@ private: System::Windows::Forms::PictureBox^  PB19;
 			// 
 			this->PB03->BackColor = System::Drawing::Color::Transparent;
 			this->PB03->BackgroundImageLayout = System::Windows::Forms::ImageLayout::None;
+			this->PB03->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"PB03.Image")));
 			this->PB03->Location = System::Drawing::Point(17, 431);
 			this->PB03->Name = L"PB03";
 			this->PB03->Size = System::Drawing::Size(60, 60);
@@ -1068,6 +1073,7 @@ private: System::Windows::Forms::PictureBox^  PB19;
 			// 
 			this->PB54->BackColor = System::Drawing::Color::Transparent;
 			this->PB54->BackgroundImageLayout = System::Windows::Forms::ImageLayout::None;
+			this->PB54->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"PB54.Image")));
 			this->PB54->Location = System::Drawing::Point(382, 365);
 			this->PB54->Name = L"PB54";
 			this->PB54->Size = System::Drawing::Size(60, 60);
@@ -1090,6 +1096,7 @@ private: System::Windows::Forms::PictureBox^  PB19;
 			// 
 			this->PB34->BackColor = System::Drawing::Color::Transparent;
 			this->PB34->BackgroundImageLayout = System::Windows::Forms::ImageLayout::None;
+			this->PB34->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"PB34.Image")));
 			this->PB34->Location = System::Drawing::Point(236, 365);
 			this->PB34->Name = L"PB34";
 			this->PB34->Size = System::Drawing::Size(60, 60);
@@ -1164,17 +1171,6 @@ private: System::Windows::Forms::PictureBox^  PB19;
 			this->PB65->SizeMode = System::Windows::Forms::PictureBoxSizeMode::StretchImage;
 			this->PB65->TabIndex = 48;
 			this->PB65->TabStop = false;
-			// 
-			// PB55
-			// 
-			this->PB55->BackColor = System::Drawing::Color::Transparent;
-			this->PB55->BackgroundImageLayout = System::Windows::Forms::ImageLayout::None;
-			this->PB55->Location = System::Drawing::Point(382, 297);
-			this->PB55->Name = L"PB55";
-			this->PB55->Size = System::Drawing::Size(60, 60);
-			this->PB55->SizeMode = System::Windows::Forms::PictureBoxSizeMode::StretchImage;
-			this->PB55->TabIndex = 47;
-			this->PB55->TabStop = false;
 			// 
 			// PB45
 			// 
@@ -1623,7 +1619,7 @@ private: System::Windows::Forms::PictureBox^  PB19;
 			this->ClientSize = System::Drawing::Size(1084, 811);
 			this->Controls->Add(this->Chessboardpanel);
 			this->Controls->Add(this->textBox2);
-			this->Controls->Add(this->textBox1);
+			this->Controls->Add(this->ChatTB);
 			this->Controls->Add(this->button1);
 			this->Controls->Add(this->send);
 			this->DoubleBuffered = true;
@@ -1632,6 +1628,7 @@ private: System::Windows::Forms::PictureBox^  PB19;
 			this->Text = L"ChessClientForm";
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->PB09))->EndInit();
 			this->Chessboardpanel->ResumeLayout(false);
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->PB55))->EndInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->PB80))->EndInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->PB70))->EndInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->PB60))->EndInit();
@@ -1680,7 +1677,6 @@ private: System::Windows::Forms::PictureBox^  PB19;
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->PB85))->EndInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->PB75))->EndInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->PB65))->EndInit();
-			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->PB55))->EndInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->PB45))->EndInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->PB35))->EndInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->PB25))->EndInit();
@@ -1733,7 +1729,7 @@ private: System::Windows::Forms::PictureBox^  PB19;
 	public: void UpdataTB(String^ message)
 	{
 		textBox2->Clear();
-		textBox1->Text += Environment::NewLine + message;
+		ChatTB->Text += Environment::NewLine + message;
 	}
 
 	private: void ReceiveCallback(IAsyncResult^ AR)
@@ -1821,16 +1817,18 @@ private: System::Windows::Forms::PictureBox^  PB19;
 	}
 
 	private: System::Void send_Click(System::Object^  sender, System::EventArgs^  e) {
+		
 		array<unsigned char>^ sendData = Encoding::ASCII->GetBytes(textBox2->Text);
 
 
-		MyCallback^ callback = gcnew MyCallback(this, &ChessClientForm::UpdataTB);
-		
-		this->Invoke(callback, textBox2->Text);
+		if (textBox2->Text != "") {
+			MyCallback^ callback = gcnew MyCallback(this, &ChessClientForm::UpdataTB);
 
-		clientSocket->BeginSend(sendData, 0, sendData->Length, SocketFlags::None, gcnew AsyncCallback(this, &ChessClientForm::SendCallback), nullptr);
-		//clientSocket->BeginReceive(buffer, 0, buffer->Length, SocketFlags::None, gcnew AsyncCallback(this, &ChessClientForm::ReceiveCallback), nullptr);
+			this->Invoke(callback, textBox2->Text);
 
+			clientSocket->BeginSend(sendData, 0, sendData->Length, SocketFlags::None, gcnew AsyncCallback(this, &ChessClientForm::SendCallback), nullptr);
+			//clientSocket->BeginReceive(buffer, 0, buffer->Length, SocketFlags::None, gcnew AsyncCallback(this, &ChessClientForm::ReceiveCallback), nullptr);
+		}
 
 	}
 	private: System::Void button1_Click(System::Object^  sender, System::EventArgs^  e) {
@@ -1854,45 +1852,67 @@ private: System::Windows::Forms::PictureBox^  PB19;
 	}
 private: System::Void textBox1_TextChanged(System::Object^  sender, System::EventArgs^  e) {
 }
-private: System::Void ChessboardPanel_Paint(System::Object^  sender, System::Windows::Forms::PaintEventArgs^  e) {
-}
-private: System::Void pictureBox1_MouseEnter(System::Object^  sender, System::EventArgs^  e) {
-
-
-}
-
-
 
 
 private: System::Void PB00_MouseDown(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e) {
 
 	PictureBox^ PicBox = (PictureBox^)sender;
-	MouseDown = PicBox;
+	MouseDownPB = PicBox;
 
 	Image^ img = PicBox->Image;
-	if (img == nullptr) return;
-	if (DoDragDrop(img, DragDropEffects::Move) == DragDropEffects::Move) {
-		PicBox->Image = nullptr;
-	}
+	ChatTB->Text += "\n\nIm MouseDown"+ Environment::NewLine;	
+	if (img == nullptr) return; //如果圖片沒有東西就直接return	
+	
+	DoDragDrop(img, DragDropEffects::Move);//有跑這行才真的開始拖拉，開始拖拉之後icon會變成箭頭跟框框
+	//if (DoDragDrop(img, DragDropEffects::Move) == DragDropEffects::Move) {
+	//	//PicBox->Image = nullptr;
+	//}
 }
 private: System::Void PB00_DragEnter(System::Object^  sender, System::Windows::Forms::DragEventArgs^  e) {
 	PictureBox^ PicBox = (PictureBox^)sender;
-	if (PicBox != MouseDown)
+
+	ChatTB->Text += "\n\nIm DragEnter" + Environment::NewLine;
+	if (PicBox != MouseDownPB)
 	{
-		if (e->Data->GetDataPresent(DataFormats::Bitmap))
+		if (e->Data->GetDataPresent(DataFormats::Bitmap))//檢查轉換成指定格式的資料是否無法使用這種格式。
 			e->Effect = DragDropEffects::Move;
 	}
 }
 private: System::Void PB00_DragDrop(System::Object^  sender, System::Windows::Forms::DragEventArgs^  e) {
 	PictureBox^ PicBox = (PictureBox^)sender;
-
-	if (PicBox != MouseDown)
+	ChatTB->Text += "\n\nIm DragDrop" + Environment::NewLine;
+	if (PicBox != MouseDownPB)
 	{
-		auto bmp = (Bitmap^)e->Data->GetData(DataFormats::Bitmap);
-		PicBox->Image = bmp;
-	}
-}
+		short OriX = 0;
+		short OriY = 0;
+		Int16::TryParse(MouseDownPB->Name->Substring(2, 1), OriX);
+		Int16::TryParse(MouseDownPB->Name->Substring(3, 1), OriY);
+
+		ChatTB->Text += "\n\nIm 1" + Environment::NewLine;
+		short DesX = 0;
+		short DesY = 0;
+		Int16::TryParse(PicBox->Name->Substring(2, 1), DesX);
+		Int16::TryParse(PicBox->Name->Substring(3, 1), DesY);
+
+
+		//********************這邊最後記得防nullptr!!!!!!!
+		List<Point>^ MoveList = gcnew List<Point>();
+
 	
+		MoveList = FirstGame->AllChess[OriX, OriY]->GetMoveList(FirstGame->AllChess);
+		if (MoveList->Contains(Point(DesX, DesY))) {
+			ChatTB->Text += "\n\nIm 2" + Environment::NewLine;
+			auto bmp = (Bitmap^)e->Data->GetData(DataFormats::Bitmap);
+			PicBox->Image = bmp;
+			MouseDownPB->Image = nullptr;
+			MouseDownPB = nullptr;
+			//座標跟本身物件指標交換
+			FirstGame->AllChess[OriX, OriY]->SetXY(DesX, DesY);
+			FirstGame->AllChess[DesX, DesY] =FirstGame->AllChess[OriX, OriY];
+			FirstGame->AllChess[OriX, OriY] = nullptr;
+		}
+	}
+}	
 private: System::Void PB85_Click(System::Object^  sender, System::EventArgs^  e) {
 	MessageBox::Show("aasdf");
 }

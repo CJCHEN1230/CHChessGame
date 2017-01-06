@@ -143,6 +143,7 @@
     <ClInclude Include="ChessClientForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>
+    <ClInclude Include="ChineseChessGame.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
