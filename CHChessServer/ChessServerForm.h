@@ -1,5 +1,7 @@
 #pragma once
-
+#include "ChineseChessGame.h"
+#include <string>
+#include <iostream>
 namespace CHChessServer {
 
 	using namespace System;
@@ -17,6 +19,9 @@ namespace CHChessServer {
 	/// <summary>
 	/// ChessServerForm 的摘要
 	/// </summary>
+
+	
+
 	public ref class ChessServerForm : public System::Windows::Forms::Form
 	{
 	public:
@@ -27,7 +32,7 @@ namespace CHChessServer {
 			//TODO:  在此加入建構函式程式碼
 			//
 			
-
+			
 			StartServer();
 		}
 
@@ -49,9 +54,17 @@ namespace CHChessServer {
 		/// <summary>
 		/// 設計工具所需的變數。
 		array<Byte>^ buffer;
-		List<Socket^>^ clientSockets;// = gcnew List<String^>();		
+		List<Socket^>^ clientSockets;// = gcnew List<String^>();	
+		List<array<Byte>^>^ bufferList;
 		Socket^ serverSocket;
 		Socket^ clientSocket;
+		Player^ player1;
+		Player^ player2;
+		int namelength;
+		String^ name1;
+		int namelength2;
+		String^ name2;
+
 
 	private: System::Windows::Forms::TextBox^  textBox1;
 	private: System::Windows::Forms::TextBox^  textBox2;
@@ -117,6 +130,7 @@ namespace CHChessServer {
 		try
 		{
 			clientSockets = gcnew List<Socket^>();
+			bufferList = gcnew List<array<Byte>^>();
 			serverSocket = gcnew Socket(AddressFamily::InterNetwork, SocketType::Stream, ProtocolType::Tcp);
 			serverSocket->Bind(gcnew IPEndPoint(IPAddress::Any, 1234));//IPEndPoint為一個定義完整的server位置，包含ip跟port
 			serverSocket->Listen(10);//一個等待連線的queue長度，不是只能10個連線
@@ -146,10 +160,17 @@ namespace CHChessServer {
 			clientSocket = serverSocket->EndAccept(AR); //完成連接，並返回此時的socket通道
 			clientSockets->Add(clientSocket);
 			buffer =gcnew array<Byte>(clientSocket->ReceiveBufferSize);
-			array<unsigned char>^ sendData = Encoding::ASCII->GetBytes("Hello Client");		
+			bufferList->Add(buffer);
+			String^ temp = "Hello Client";
+			List<Byte>^ byteMessageList = gcnew List<Byte>();
+			byteMessageList->AddRange(BitConverter::GetBytes((Int16)1));
+			byteMessageList->AddRange(BitConverter::GetBytes(temp->Length));
+			byteMessageList->AddRange(Encoding::ASCII->GetBytes(temp));
+
+			array<unsigned char>^ sendData = byteMessageList->ToArray();
 			clientSocket->BeginSend(sendData, 0, sendData->Length, SocketFlags::None, gcnew AsyncCallback(this, &ChessServerForm::SendCallback), clientSocket);			
 			clientSocket->BeginReceive(buffer, 0, buffer->Length, SocketFlags::None, gcnew AsyncCallback(this, &ChessServerForm::ReceiveCallback), clientSocket);			
-			serverSocket->BeginAccept(gcnew AsyncCallback(this, &ChessServerForm::AcceptCallback), nullptr);
+			serverSocket->BeginAccept(gcnew AsyncCallback(this, &ChessServerForm::AcceptCallback), serverSocket);
 		}
 		catch (SocketException^ ex)
 		{
@@ -185,7 +206,7 @@ namespace CHChessServer {
 	{
 		
 		textBox2->Clear();
-		textBox1->Text +=Environment::NewLine +  message;
+		textBox1->Text += message+ Environment::NewLine ;
 		
 	}
 
@@ -193,37 +214,121 @@ namespace CHChessServer {
 	{
 
 		Socket^ current = (Socket^)AR->AsyncState;
+
+		//int index = clientSockets->FindIndex(current->);
 		try
 		{
 			
 			int received = current->EndReceive(AR);// 結束非同步讀取，並回傳收到幾個Byte
 
+			
 			if (received == 0)
 			{
 				return;
 			}
-			String^ message = Encoding::ASCII->GetString(buffer);
+			int index;
+			index=clientSockets->IndexOf(current);
+
+
+			int code = BitConverter::ToInt16(bufferList[index], 0);
+			MyCallback^ callback = gcnew MyCallback(this, &ChessServerForm::UpdataTB);
+
+
+			this->BeginInvoke(callback, "目前索引為" + index + "人連線");
+			
+			
+
+			this->BeginInvoke(callback, "目前有"+ clientSockets->Count+"人連線");
+
+			if (code == 10 &&clientSockets->Count<3) {
+
+				if (clientSockets->Count == 1) {					
+					namelength = BitConverter::ToInt32(bufferList[0], 2);
+					name1=Encoding::ASCII->GetString(bufferList[0], 6, namelength);
+
+					
+				}
+				if (clientSockets->Count == 2) {
+					int temp;
+					namelength2 = BitConverter::ToInt32(bufferList[1], 2);
+					name2 = Encoding::ASCII->GetString(bufferList[1], 6, namelength2);
+					String^ temp222;
+					temp = namelength2;
+					temp222 = name2;
+
+
+					List<Byte>^ byteMessageList = gcnew List<Byte>();
+					byteMessageList->AddRange(BitConverter::GetBytes((short)10));
+					byteMessageList->AddRange(BitConverter::GetBytes(namelength));
+					byteMessageList->AddRange(Encoding::ASCII->GetBytes(name1));
+					byteMessageList->AddRange(BitConverter::GetBytes((int)PlayerState::Player1));					
+					byteMessageList->AddRange(BitConverter::GetBytes(namelength2));
+					byteMessageList->AddRange(Encoding::ASCII->GetBytes(name2));
+					byteMessageList->AddRange(BitConverter::GetBytes((int)PlayerState::Player2));
+					array<unsigned char>^ sendData = byteMessageList->ToArray();					
+					clientSockets[0]->BeginSend(sendData, 0, sendData->Length, SocketFlags::None, gcnew AsyncCallback(this, &ChessServerForm::SendCallback), clientSockets[0]);
+
+					byteMessageList = gcnew List<Byte>();
+					byteMessageList->AddRange(BitConverter::GetBytes((short)10));
+					byteMessageList->AddRange(BitConverter::GetBytes(namelength2));
+					byteMessageList->AddRange(Encoding::ASCII->GetBytes(name2));
+					byteMessageList->AddRange(BitConverter::GetBytes((int)PlayerState::Player2));
+					byteMessageList->AddRange(BitConverter::GetBytes(namelength));
+					byteMessageList->AddRange(Encoding::ASCII->GetBytes(name1));
+					byteMessageList->AddRange(BitConverter::GetBytes((int)PlayerState::Player1));
+					sendData = byteMessageList->ToArray();
+
+
+					clientSockets[1]->BeginSend(sendData, 0, sendData->Length, SocketFlags::None, gcnew AsyncCallback(this, &ChessServerForm::SendCallback), clientSockets[1]);
+
+				}
+
+
+
+
+
+
+			}
+
+
+
+			if (code == 1) {
+				int MessageLength = BitConverter::ToInt32(bufferList[index], 2);
+				String^ message = Encoding::ASCII->GetString(bufferList[index], 6, MessageLength);
+				MyCallback^ callback = gcnew MyCallback(this, &ChessServerForm::UpdataTB);
+				this->Invoke(callback, message);
+
+
+				List<Byte>^ byteMessageList = gcnew List<Byte>();
+				byteMessageList->AddRange(BitConverter::GetBytes((short)1));
+				byteMessageList->AddRange(BitConverter::GetBytes(MessageLength));
+				byteMessageList->AddRange(Encoding::ASCII->GetBytes(message));
+
+				array<unsigned char>^ sendData = byteMessageList->ToArray();
+
+				
+				
+				for each(Socket^ EachSocket in clientSockets) {
+					if (current != EachSocket) {
+						EachSocket->BeginSend(sendData, 0, sendData->Length, SocketFlags::None, gcnew AsyncCallback(this, &ChessServerForm::SendCallback), EachSocket/*nullptr*/);
+					}
+				}
+			}
+			/*String^ message = Encoding::ASCII->GetString(buffer);
 
 			array<unsigned char>^ sendData = Encoding::ASCII->GetBytes(message);
 
 			
 			MyCallback^ callback = gcnew MyCallback(this, &ChessServerForm::UpdataTB);
-			//callback(message);
-			this->Invoke(callback, message);
-			// The received data is deserialized in the PersonPackage ctor.
-			/*PersonPackage person = new PersonPackage(buffer);
-			SubmitPersonToDataGrid(person);*/
-
+			
+			this->Invoke(callback, message);*/
+			
 			
 
-			for each(Socket^ EachSocket in clientSockets) {
-				if (current != EachSocket) {
-					EachSocket->BeginSend(sendData, 0, sendData->Length, SocketFlags::None, gcnew AsyncCallback(this, &ChessServerForm::SendCallback), EachSocket/*nullptr*/);
-				}
-			}
 			
-			buffer = gcnew array<Byte>(current->ReceiveBufferSize);
-			current->BeginReceive(buffer, 0, buffer->Length, SocketFlags::None, gcnew AsyncCallback(this, &ChessServerForm::ReceiveCallback), current);
+			
+			bufferList[index] = gcnew array<Byte>(current->ReceiveBufferSize);
+			current->BeginReceive(bufferList[index], 0, bufferList[index]->Length, SocketFlags::None, gcnew AsyncCallback(this, &ChessServerForm::ReceiveCallback), current);
 			
 		}
 		catch (SocketException^ ex)
@@ -241,7 +346,13 @@ namespace CHChessServer {
 
 	private: System::Void Sendbutton_Click(System::Object^  sender, System::EventArgs^  e) {
 		
-		array<unsigned char>^ sendData = Encoding::ASCII->GetBytes(textBox2->Text);
+
+		List<Byte>^ byteMessageList = gcnew List<Byte>();
+		byteMessageList->AddRange(BitConverter::GetBytes((Int16)1));
+		byteMessageList->AddRange(BitConverter::GetBytes(textBox2->Text->Length));
+		byteMessageList->AddRange(Encoding::ASCII->GetBytes(textBox2->Text));
+
+		array<unsigned char>^ sendData = byteMessageList->ToArray();
 
 		MyCallback^ callback = gcnew MyCallback(this, &ChessServerForm::UpdataTB);
 	
