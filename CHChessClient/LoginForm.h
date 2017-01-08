@@ -152,7 +152,7 @@ namespace CHChessClient {
 			{
 				clientSocket = gcnew Socket(AddressFamily::InterNetwork, SocketType::Stream, ProtocolType::Tcp);
 				// Connect to the specified host.
-				auto endPoint = gcnew IPEndPoint(IPAddress::Parse("140.116.71.78"), 33333);
+				auto endPoint = gcnew IPEndPoint(IPAddress::Parse("127.0.0.1"), 1234);//"140.116.71.78"), 33333);
 				clientSocket->BeginConnect(endPoint, gcnew AsyncCallback(this, &LoginForm::ConnectCallback), clientSocket);
 
 			/*	for (int i = 0;i<2;i++) {

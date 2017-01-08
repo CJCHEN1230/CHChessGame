@@ -28,11 +28,14 @@ namespace CHChessServer {
 	public:
 		virtual List<Point>^ GetMoveList(array<Chessman^, 2>^ ChessboardState) = 0;
 
-		unsigned short GetX() { return x; }
-		void SetX(unsigned short X) { this->x = X; }
+		/*unsigned short GetX() { return x; }
+		void SetX(unsigned short X) { this->x = X; }*/
 
 		/*unsigned short GetY() { return y; }
 		void SetY(unsigned short Y) { this->y = Y; }*/
+
+		String ^ GetName() { return Name; }
+		void SetName(String^ Name2) { this->Name = Name2; }
 
 		void SetXY(unsigned short X, unsigned short Y) {
 			this->x = X;
@@ -285,7 +288,7 @@ namespace CHChessServer {
 		virtual List<Point>^ GetMoveList(array<Chessman^, 2>^ ChessboardState) override {
 
 			List<Point>^ CoordinateList = gcnew List<Point>();
-			List<Point>^ TempList = gcnew List<Point>();
+
 
 			for (int i = this->x + 1; i < 9; i++) {
 				if (ChessboardState[i, this->y] == nullptr) {
@@ -412,6 +415,8 @@ namespace CHChessServer {
 		ChessColor Color;
 		bool ISMoving;
 	public:
+
+
 		Player() {};
 		Player(String^ name2, Socket^ socket2, PlayerState playerstate, ChessColor color2, bool CanMoving) :Name(name2), socket(socket2), State(playerstate), Color(color2), ISMoving(CanMoving) {}
 
@@ -487,8 +492,6 @@ namespace CHChessServer {
 	public ref class PacketProcessing {
 
 	public:
-
-
 		static short PacketNum;
 
 		PacketProcessing() {
@@ -519,7 +522,7 @@ namespace CHChessServer {
 		{
 			List<Byte>^ byteList = gcnew List<Byte>();
 
-			byteList->AddRange(BitConverter::GetBytes((short)2));
+			byteList->AddRange(BitConverter::GetBytes((short)-5));
 			byteList->AddRange(BitConverter::GetBytes((Int32)(player->GetPlayerState())));
 			byteList->AddRange(BitConverter::GetBytes(src->X));
 			byteList->AddRange(BitConverter::GetBytes(src->Y));
@@ -552,9 +555,8 @@ namespace CHChessServer {
 
 			for (int i = 0; i<count; i++) {
 
-
-				MoveArray[i].X = BitConverter::ToInt32(data, 4 + count * 8);
-				MoveArray[i].Y = BitConverter::ToInt32(data, 8 + count * 8);
+				Point^ temp = gcnew Point(BitConverter::ToInt32(data, 4 + i * 8), BitConverter::ToInt32(data, 8 + i * 8));
+				MoveArray->Add(*temp);
 
 			}
 
@@ -562,7 +564,8 @@ namespace CHChessServer {
 		};
 
 
+
+
 	};
 
-
-}
+};

@@ -136,9 +136,9 @@ namespace CHChessServer {
 		try
 		{
 			clientSockets = gcnew List<Socket^>();
-			bufferList = gcnew List<array<Byte>^>();
+			bufferList = gcnew List<array<Byte>^>();//Parse("192.168.2.50"), 55555
 			serverSocket = gcnew Socket(AddressFamily::InterNetwork, SocketType::Stream, ProtocolType::Tcp);//IPAddress::Any
-			serverSocket->Bind(gcnew IPEndPoint(IPAddress::Parse("192.168.2.50"), 55555));//IPEndPoint為一個定義完整的server位置，包含ip跟port
+			serverSocket->Bind(gcnew IPEndPoint(IPAddress::Any,1234));//IPEndPoint為一個定義完整的server位置，包含ip跟port
 			serverSocket->Listen(10);//一個等待連線的queue長度，不是只能10個連線
 			serverSocket->BeginAccept(gcnew AsyncCallback(this, &ChessServerForm::AcceptCallback), serverSocket); //AsyncCallback(AcceptCallback),一旦連接上後的回調函數為AcceptCallback。當系統調用這個函數時，自動賦予的輸入參數為IAsyncResult類型變量ar。
 		}
@@ -422,7 +422,10 @@ namespace CHChessServer {
 		//檢查有沒有下達關鍵指令
 		if (textBox2->Text->Substring(0, 1) == "@")
 		{
-				if (textBox2->Text->Substring(1, 7)=="player1") {
+			if (textBox2->Text->Length >= 8)
+			{
+
+				if (textBox2->Text->Substring(1, 7) == "player1") {
 					List<Byte>^ byteMessageList = gcnew List<Byte>();
 					byteMessageList->AddRange(Encoding::ASCII->GetBytes("@"));
 					byteMessageList->AddRange(Encoding::ASCII->GetBytes("player1"));
@@ -442,6 +445,7 @@ namespace CHChessServer {
 						EachSocket->BeginSend(sendData, 0, sendData->Length, SocketFlags::None, gcnew AsyncCallback(this, &ChessServerForm::SendCallback), EachSocket/*nullptr*/);
 					}
 				}
+			}
 				MyCallback^ callback = gcnew MyCallback(this, &ChessServerForm::UpdataTB);
 				this->Invoke(callback, textBox2->Text);
 				return;

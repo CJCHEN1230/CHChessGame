@@ -109,6 +109,7 @@ namespace CHChessClient {
 		/// <summary>
 		/// 設計工具所需的變數。
 
+		int CountForRook;
 		String^ WatcherName;
 		Player^ Thisplayer;
 		Player^ Enemy;
@@ -1724,7 +1725,7 @@ private: System::ComponentModel::IContainer^  components;
 			this->ModeLabel->BackColor = System::Drawing::Color::Transparent;
 			this->ModeLabel->Font = (gcnew System::Drawing::Font(L"微軟正黑體", 27.75F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(136)));
-			this->ModeLabel->Location = System::Drawing::Point(738, 162);
+			this->ModeLabel->Location = System::Drawing::Point(731, 147);
 			this->ModeLabel->Name = L"ModeLabel";
 			this->ModeLabel->Size = System::Drawing::Size(38, 280);
 			this->ModeLabel->TabIndex = 96;
@@ -2227,8 +2228,6 @@ private: System::ComponentModel::IContainer^  components;
 
 		if (KeyInTB->Text!="") {
 			
-			
-
 				List<Byte>^ byteMessageList = gcnew List<Byte>();
 
 				byteMessageList->AddRange(BitConverter::GetBytes((short)-100));
