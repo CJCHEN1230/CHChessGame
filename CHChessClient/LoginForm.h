@@ -52,7 +52,11 @@ namespace CHChessClient {
 		Socket^ clientSocket;
 		String^ Name;
 		array<Byte>^ buffer;
+
+
 		ChessClientForm^ clientform;
+
+
 		/// </summary>
 		System::ComponentModel::Container ^components;
 
@@ -63,6 +67,7 @@ namespace CHChessClient {
 		/// </summary>
 		void InitializeComponent(void)
 		{
+			System::ComponentModel::ComponentResourceManager^  resources = (gcnew System::ComponentModel::ComponentResourceManager(LoginForm::typeid));
 			this->label1 = (gcnew System::Windows::Forms::Label());
 			this->LoginBT = (gcnew System::Windows::Forms::Button());
 			this->LoginTB = (gcnew System::Windows::Forms::TextBox());
@@ -72,13 +77,14 @@ namespace CHChessClient {
 			// label1
 			// 
 			this->label1->AutoSize = true;
+			this->label1->BackColor = System::Drawing::Color::Transparent;
 			this->label1->Font = (gcnew System::Drawing::Font(L"微軟正黑體", 36, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(136)));
-			this->label1->Location = System::Drawing::Point(199, 133);
+			this->label1->Location = System::Drawing::Point(151, 131);
 			this->label1->Name = L"label1";
-			this->label1->Size = System::Drawing::Size(123, 61);
+			this->label1->Size = System::Drawing::Size(219, 61);
 			this->label1->TabIndex = 0;
-			this->label1->Text = L"名字";
+			this->label1->Text = L"輸入名字";
 			// 
 			// LoginBT
 			// 
@@ -104,6 +110,7 @@ namespace CHChessClient {
 			// label2
 			// 
 			this->label2->AutoSize = true;
+			this->label2->BackColor = System::Drawing::Color::Transparent;
 			this->label2->Font = (gcnew System::Drawing::Font(L"微軟正黑體", 36, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(136)));
 			this->label2->Location = System::Drawing::Point(106, 49);
@@ -116,6 +123,8 @@ namespace CHChessClient {
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 12);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
+			this->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"$this.BackgroundImage")));
+			this->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
 			this->ClientSize = System::Drawing::Size(523, 420);
 			this->Controls->Add(this->label2);
 			this->Controls->Add(this->LoginTB);
@@ -143,7 +152,7 @@ namespace CHChessClient {
 			{
 				clientSocket = gcnew Socket(AddressFamily::InterNetwork, SocketType::Stream, ProtocolType::Tcp);
 				// Connect to the specified host.
-				auto endPoint = gcnew IPEndPoint(IPAddress::Parse("127.0.0.1"), 1234);
+				auto endPoint = gcnew IPEndPoint(IPAddress::Parse("140.116.71.78"), 33333);
 				clientSocket->BeginConnect(endPoint, gcnew AsyncCallback(this, &LoginForm::ConnectCallback), clientSocket);
 
 			/*	for (int i = 0;i<2;i++) {
@@ -186,7 +195,7 @@ namespace CHChessClient {
 	
 
 	public: void GameStart(Player^ player1, Player^ player2, Socket^ clientSocke , array<Byte>^ buffer) {
-		clientform = gcnew ChessClientForm(player1, player2, clientSocket, buffer);
+		clientform = gcnew ChessClientForm(player1, player2, clientSocket, buffer, LoginTB->Text);
 
 		clientform->FormClosed += gcnew FormClosedEventHandler(this, &LoginForm::LoginForm_FormClosed);//this, &ChessServerForm::Sendbutton_Click
 
@@ -194,6 +203,8 @@ namespace CHChessClient {
 		this->Hide();//隱藏父視窗
 					 //this->Visible = false;
 		MessageBox::Show("歡迎登入!" + LoginTB->Text);
+
+
 	}
 
 
@@ -211,7 +222,9 @@ namespace CHChessClient {
 				return;
 			}
 			int code = BitConverter::ToInt16(buffer, 0);
-			if (code == 10) {
+
+			//收到server的封包，拆成開始對戰
+			if (code == -10) {
 
 				int MessageLength1 = BitConverter::ToInt32(buffer, 2);
 				String^ name1 = Encoding::ASCII->GetString(buffer, 6, MessageLength1);
@@ -233,6 +246,32 @@ namespace CHChessClient {
 				MyCallback2^ callback2 = gcnew MyCallback2(this, &LoginForm::GameStart);
 				
 				this->Invoke(callback2,player1,player2,clientSocket,buffer);
+
+			}
+			//觀戰者
+			if (code == -20) {
+
+				int MessageLength1 = BitConverter::ToInt32(buffer, 2);
+				String^ name1 = Encoding::ASCII->GetString(buffer, 6, MessageLength1);
+				PlayerState temp1 = (PlayerState)BitConverter::ToInt32(buffer, 6 + MessageLength1);
+
+
+				int MessageLength2 = BitConverter::ToInt32(buffer, 10 + MessageLength1);
+				String^ name2 = Encoding::ASCII->GetString(buffer, 14 + MessageLength1, MessageLength2);
+				PlayerState temp2 = (PlayerState)BitConverter::ToInt32(buffer, 14 + MessageLength1 + MessageLength2);
+
+
+				ChessColor tempcolor = (temp1 == PlayerState::Player1 ? ChessColor::Blue : ChessColor::Green);
+				ChessColor tempcolor2 = (temp2 == PlayerState::Player1 ? ChessColor::Blue : ChessColor::Green);
+
+
+				Player^ player1 = gcnew Player(name1, nullptr, temp1, tempcolor, false);
+				Player^ player2 = gcnew Player(name2, nullptr, temp2, tempcolor2, false);
+				//player2->GetName("");
+
+				MyCallback2^ callback2 = gcnew MyCallback2(this, &LoginForm::GameStart);
+
+				this->Invoke(callback2, player1, player2, clientSocket, buffer);
 
 			}
 
@@ -267,7 +306,7 @@ namespace CHChessClient {
 
 			List<Byte>^ byteMessageList = gcnew List<Byte>();
 
-			byteMessageList->AddRange(BitConverter::GetBytes((short)10));
+			byteMessageList->AddRange(BitConverter::GetBytes((short)-10));
 			byteMessageList->AddRange(BitConverter::GetBytes(LoginTB->Text->Length));
 			byteMessageList->AddRange(Encoding::ASCII->GetBytes(LoginTB->Text));
 

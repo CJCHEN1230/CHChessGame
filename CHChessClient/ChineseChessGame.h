@@ -28,11 +28,14 @@ namespace CHChessClient {
 	public:
 		virtual List<Point>^ GetMoveList(array<Chessman^, 2>^ ChessboardState) = 0;
 
-		unsigned short GetX() { return x; }
-		void SetX(unsigned short X) { this->x = X; }
+		/*unsigned short GetX() { return x; }
+		void SetX(unsigned short X) { this->x = X; }*/
 
 		/*unsigned short GetY() { return y; }
 		void SetY(unsigned short Y) { this->y = Y; }*/
+
+		String ^ GetName() { return Name; }
+		void SetName(String^ Name2) { this->Name = Name2; }
 
 		void SetXY(unsigned short X, unsigned short Y) {
 			this->x = X;
@@ -285,7 +288,7 @@ namespace CHChessClient {
 		virtual List<Point>^ GetMoveList(array<Chessman^, 2>^ ChessboardState) override {
 
 			List<Point>^ CoordinateList = gcnew List<Point>();
-			List<Point>^ TempList = gcnew List<Point>();
+			
 
 			for (int i = this->x + 1; i < 9; i++) {
 				if (ChessboardState[i, this->y] == nullptr) {
@@ -489,25 +492,29 @@ namespace CHChessClient {
 	public ref class PacketProcessing {
 
 	public:
-		static PlayerState playerstate;
-		static Point^ src;
-		static Point^ des;
 		static short PacketNum;
 
 		PacketProcessing() {
-			src = gcnew Point();
-			des = gcnew Point();
-		}
 
-		static void  ReceiveMoveInfo(array<Byte>^ data) {
-			
-			
+		}
+		static void  ReceiveMoveInfo(Point^ src, Point^ des, array<Byte>^ data) {
+
+
+			src->X = BitConverter::ToUInt32(data, 6);
+			src->Y = BitConverter::ToUInt32(data, 10);
+			des->X = BitConverter::ToUInt32(data, 14);
+			des->Y = BitConverter::ToUInt32(data, 18);
+
+		}
+		static void  ReceiveMoveInfo(Point^ src, Point^ des, array<Byte>^ data, PlayerState% ReceiveState) {
+
+
 			PacketNum = BitConverter::ToInt16(data, 0);
-			playerstate = (PlayerState)BitConverter::ToInt32(data, 2);
-			src->X = BitConverter::ToUInt16(data, 6);
-			src->Y = BitConverter::ToUInt16(data, 8);
-			des->X = BitConverter::ToUInt16(data, 10);
-			des->Y = BitConverter::ToUInt16(data, 12);
+			ReceiveState = (PlayerState)BitConverter::ToInt32(data, 2);
+			src->X = BitConverter::ToUInt32(data, 6);
+			src->Y = BitConverter::ToUInt32(data, 10);
+			des->X = BitConverter::ToUInt32(data, 14);
+			des->Y = BitConverter::ToUInt32(data, 18);
 
 		}
 
@@ -515,8 +522,8 @@ namespace CHChessClient {
 		{
 			List<Byte>^ byteList = gcnew List<Byte>();
 
-			byteList->AddRange(BitConverter::GetBytes((short)2));
-			byteList->AddRange(BitConverter::GetBytes((Int32)player->GetPlayerState()));
+			byteList->AddRange(BitConverter::GetBytes((short)-5));
+			byteList->AddRange(BitConverter::GetBytes((Int32)(player->GetPlayerState())));
 			byteList->AddRange(BitConverter::GetBytes(src->X));
 			byteList->AddRange(BitConverter::GetBytes(src->Y));
 			byteList->AddRange(BitConverter::GetBytes(des->X));
@@ -524,7 +531,41 @@ namespace CHChessClient {
 			return byteList->ToArray();
 		}
 
-	};
-	
 
-}
+		static array<Byte>^ WatchingInfoToByteArray(List<Point>^ ChessRecord) {
+			List<Byte>^ byteList = gcnew List<Byte>();
+			byteList->AddRange(BitConverter::GetBytes(ChessRecord->Count));//¥ý¶ë°}¦Cªø«×
+
+			for (int i = 0; i < ChessRecord->Count; i++) {
+
+				byteList->AddRange(BitConverter::GetBytes(ChessRecord[i].X));
+				byteList->AddRange(BitConverter::GetBytes(ChessRecord[i].Y));
+			}
+
+			return byteList->ToArray();
+		}
+
+		static List<Point>^ ReceiveWatchingInfo(array<Byte>^ data, int& count) {
+
+
+			List<Point>^ MoveArray = gcnew List<Point>();
+
+			count= BitConverter::ToInt32(data, 0);
+
+
+			for (int i = 0;i<count;i++) {
+			
+				Point^ temp = gcnew Point(BitConverter::ToInt32(data, 4 + i * 8), BitConverter::ToInt32(data, 8 + i * 8));
+				MoveArray->Add(*temp);
+			
+			}
+
+			return MoveArray;
+		};
+
+
+
+
+	};
+
+};

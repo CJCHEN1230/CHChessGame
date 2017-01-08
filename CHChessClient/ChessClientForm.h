@@ -1,5 +1,7 @@
 ﻿#pragma once
 #include "ChineseChessGame.h"
+//#include "LoginForm.h"
+
 namespace CHChessClient {
 
 	using namespace System;
@@ -18,26 +20,34 @@ namespace CHChessClient {
 	public ref class ChessClientForm : public System::Windows::Forms::Form
 	{
 	public:
-		ChessClientForm(Player^ thisplayer2,Player^ enemy2,Socket^ ServerSocket2 , array<Byte>^ buffer2)
+		ChessClientForm(Player^ thisplayer2,Player^ enemy2,Socket^ ServerSocket2 , array<Byte>^ buffer2, String ^ WatcherName2)
 		{
 			InitializeComponent();
 			//
 			//TODO:  在此加入建構函式程式碼
 			//
+
+			EnemyGeneral = gcnew Point(4,9);
+			MyGeneral = gcnew Point(4,0);
+
+			WatcherName = WatcherName2;
 			buffer=buffer2;
 			clientSocket= ServerSocket2;
 
 			Thisplayer = thisplayer2;
 			Enemy = enemy2;
 
-			/*Thisplayer = gcnew Player(Name, nullptr, PlayerState::Player2, ChessColor::Blue, true);
-			Enemy = gcnew Player("老周", nullptr, PlayerState::Player1, ChessColor::Green, false);*/
+			Player1LB->Text = Thisplayer->GetName();
+			Player2LB->Text = Enemy->GetName();
+
+			
+			
 			ThisGame = gcnew Game(Thisplayer, Enemy);
 
 			
 			ChessboardState = gcnew array<Chessman^, 2>(9, 10); //整個棋盤狀況
 
-//			ThisGame->AllPB= gcnew array<PictureBox^, 2>(9, 10);
+			ThisGame->AllPB= gcnew array<PictureBox^, 2>(9, 10);
 
 			//將本機所有的PB全部存在GAME裡面的PB
 
@@ -64,10 +74,21 @@ namespace CHChessClient {
 					ThisGame->AllPB[i, j]->DragDrop += gcnew DragEventHandler(this, &ChessClientForm::PB00_DragDrop);
 				}			
 			}
-			ChatTB->SelectionStart = ChatTB->Text->Length;
-			ChatTB->ScrollToCaret();
+			if (Thisplayer->GetPlayerState()==PlayerState::Watching || Thisplayer->GetPlayerState() == PlayerState::Watching) {
 			
+				List<Byte>^ byteMessageList = gcnew List<Byte>();
 
+				byteMessageList->AddRange(BitConverter::GetBytes((short)30));
+				
+
+				array<unsigned char>^ sendData = byteMessageList->ToArray();
+				
+
+				//clientSocket->BeginSend(sendData, 0, sendData->Length, SocketFlags::None, gcnew AsyncCallback(this, &ChessClientForm::SendCallback), clientSocket);
+				
+				MessageBox::Show("預備觀戰中");
+			
+			}
 
 			clientSocket->BeginReceive(buffer, 0, buffer->Length, SocketFlags::None, gcnew AsyncCallback(this, &ChessClientForm::ReceiveCallback), clientSocket);
 		}
@@ -88,7 +109,7 @@ namespace CHChessClient {
 		/// <summary>
 		/// 設計工具所需的變數。
 
-		
+		String^ WatcherName;
 		Player^ Thisplayer;
 		Player^ Enemy;
 		Game^ ThisGame;
@@ -97,13 +118,18 @@ namespace CHChessClient {
 		String^ Name;
 		array<Byte>^ buffer;
 		array<Chessman^, 2>^ ChessboardState;
+		Point^ EnemyGeneral;
+		Point^ MyGeneral;
+
+		
+		//LoginForm^ loginform2;
 		//PacketProcessing^ packetprocessing;
 		//array<PictureBox^, 2>^ AllPB ;
 		
 		bool drag = false;   // 記錄是否可拖曳，預設為不可
 		int sX, sY;         // 記錄滑鼠按下時的座標値
-	private: System::Windows::Forms::Button^  send;
-	private: System::Windows::Forms::Button^  ConnectBT;
+
+
 
 	private: System::Windows::Forms::TextBox^  ChatTB;
 	private: System::Windows::Forms::TextBox^  KeyInTB;
@@ -269,6 +295,13 @@ namespace CHChessClient {
 
 	private: System::Windows::Forms::PictureBox^  PB19;
 private: System::Windows::Forms::ImageList^  ChessimageList;
+private: System::Windows::Forms::Label^  Player1LB;
+private: System::Windows::Forms::Label^  Player2LB;
+private: System::Windows::Forms::Label^  label1;
+private: System::Windows::Forms::Label^  label2;
+private: System::Windows::Forms::Label^  label3;
+private: System::Windows::Forms::Label^  ModeLabel;
+
 private: System::ComponentModel::IContainer^  components;
 
 
@@ -285,8 +318,6 @@ private: System::ComponentModel::IContainer^  components;
 		{
 			this->components = (gcnew System::ComponentModel::Container());
 			System::ComponentModel::ComponentResourceManager^  resources = (gcnew System::ComponentModel::ComponentResourceManager(ChessClientForm::typeid));
-			this->send = (gcnew System::Windows::Forms::Button());
-			this->ConnectBT = (gcnew System::Windows::Forms::Button());
 			this->ChatTB = (gcnew System::Windows::Forms::TextBox());
 			this->KeyInTB = (gcnew System::Windows::Forms::TextBox());
 			this->PB09 = (gcnew System::Windows::Forms::PictureBox());
@@ -381,6 +412,12 @@ private: System::ComponentModel::IContainer^  components;
 			this->PB29 = (gcnew System::Windows::Forms::PictureBox());
 			this->PB19 = (gcnew System::Windows::Forms::PictureBox());
 			this->ChessimageList = (gcnew System::Windows::Forms::ImageList(this->components));
+			this->Player1LB = (gcnew System::Windows::Forms::Label());
+			this->Player2LB = (gcnew System::Windows::Forms::Label());
+			this->label1 = (gcnew System::Windows::Forms::Label());
+			this->label2 = (gcnew System::Windows::Forms::Label());
+			this->label3 = (gcnew System::Windows::Forms::Label());
+			this->ModeLabel = (gcnew System::Windows::Forms::Label());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->PB09))->BeginInit();
 			this->Chessboardpanel->SuspendLayout();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->PB55))->BeginInit();
@@ -474,44 +511,29 @@ private: System::ComponentModel::IContainer^  components;
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->PB19))->BeginInit();
 			this->SuspendLayout();
 			// 
-			// send
-			// 
-			this->send->Location = System::Drawing::Point(935, 546);
-			this->send->Name = L"send";
-			this->send->Size = System::Drawing::Size(75, 23);
-			this->send->TabIndex = 0;
-			this->send->Text = L"send";
-			this->send->UseVisualStyleBackColor = true;
-			this->send->Click += gcnew System::EventHandler(this, &ChessClientForm::send_Click);
-			// 
-			// ConnectBT
-			// 
-			this->ConnectBT->Location = System::Drawing::Point(935, 494);
-			this->ConnectBT->Name = L"ConnectBT";
-			this->ConnectBT->Size = System::Drawing::Size(75, 23);
-			this->ConnectBT->TabIndex = 1;
-			this->ConnectBT->Text = L"connect";
-			this->ConnectBT->UseVisualStyleBackColor = true;
-			this->ConnectBT->Click += gcnew System::EventHandler(this, &ChessClientForm::ConnectBT_Click);
-			// 
 			// ChatTB
 			// 
+			this->ChatTB->Enabled = false;
 			this->ChatTB->Font = (gcnew System::Drawing::Font(L"微軟正黑體", 14.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(136)));
-			this->ChatTB->Location = System::Drawing::Point(744, 243);
+			this->ChatTB->Location = System::Drawing::Point(809, 137);
 			this->ChatTB->Multiline = true;
 			this->ChatTB->Name = L"ChatTB";
 			this->ChatTB->ScrollBars = System::Windows::Forms::ScrollBars::Vertical;
-			this->ChatTB->Size = System::Drawing::Size(208, 230);
+			this->ChatTB->Size = System::Drawing::Size(208, 362);
 			this->ChatTB->TabIndex = 2;
-			this->ChatTB->TextChanged += gcnew System::EventHandler(this, &ChessClientForm::textBox1_TextChanged);
+			this->ChatTB->TextChanged += gcnew System::EventHandler(this, &ChessClientForm::ChatTB_TextChanged);
 			// 
 			// KeyInTB
 			// 
-			this->KeyInTB->Location = System::Drawing::Point(910, 593);
+			this->KeyInTB->BackColor = System::Drawing::SystemColors::Menu;
+			this->KeyInTB->Font = (gcnew System::Drawing::Font(L"微軟正黑體", 15.75F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(136)));
+			this->KeyInTB->Location = System::Drawing::Point(809, 527);
 			this->KeyInTB->Name = L"KeyInTB";
-			this->KeyInTB->Size = System::Drawing::Size(100, 22);
+			this->KeyInTB->Size = System::Drawing::Size(208, 35);
 			this->KeyInTB->TabIndex = 3;
+			this->KeyInTB->KeyDown += gcnew System::Windows::Forms::KeyEventHandler(this, &ChessClientForm::KeyInTB_KeyDown);
 			// 
 			// PB09
 			// 
@@ -1637,20 +1659,97 @@ private: System::ComponentModel::IContainer^  components;
 			this->ChessimageList->Images->SetKeyName(12, L"GRooks.png");
 			this->ChessimageList->Images->SetKeyName(13, L"GSoldiers.png");
 			// 
+			// Player1LB
+			// 
+			this->Player1LB->AutoSize = true;
+			this->Player1LB->BackColor = System::Drawing::Color::Transparent;
+			this->Player1LB->Font = (gcnew System::Drawing::Font(L"微軟正黑體", 26.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(136)));
+			this->Player1LB->Location = System::Drawing::Point(861, 645);
+			this->Player1LB->Name = L"Player1LB";
+			this->Player1LB->Size = System::Drawing::Size(124, 45);
+			this->Player1LB->TabIndex = 8;
+			this->Player1LB->Text = L"label1";
+			// 
+			// Player2LB
+			// 
+			this->Player2LB->AutoSize = true;
+			this->Player2LB->BackColor = System::Drawing::Color::Transparent;
+			this->Player2LB->Font = (gcnew System::Drawing::Font(L"微軟正黑體", 26.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(136)));
+			this->Player2LB->Location = System::Drawing::Point(838, 21);
+			this->Player2LB->Name = L"Player2LB";
+			this->Player2LB->Size = System::Drawing::Size(124, 45);
+			this->Player2LB->TabIndex = 9;
+			this->Player2LB->Text = L"label2";
+			// 
+			// label1
+			// 
+			this->label1->AutoSize = true;
+			this->label1->BackColor = System::Drawing::Color::Transparent;
+			this->label1->Font = (gcnew System::Drawing::Font(L"微軟正黑體", 18, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(136)));
+			this->label1->Location = System::Drawing::Point(812, 91);
+			this->label1->Name = L"label1";
+			this->label1->Size = System::Drawing::Size(86, 31);
+			this->label1->TabIndex = 10;
+			this->label1->Text = L"聊天室";
+			// 
+			// label2
+			// 
+			this->label2->AutoSize = true;
+			this->label2->BackColor = System::Drawing::Color::Transparent;
+			this->label2->Font = (gcnew System::Drawing::Font(L"微軟正黑體", 26.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(136)));
+			this->label2->Location = System::Drawing::Point(720, 21);
+			this->label2->Name = L"label2";
+			this->label2->Size = System::Drawing::Size(99, 45);
+			this->label2->TabIndex = 11;
+			this->label2->Text = L"玩家:";
+			// 
+			// label3
+			// 
+			this->label3->AutoSize = true;
+			this->label3->BackColor = System::Drawing::Color::Transparent;
+			this->label3->Font = (gcnew System::Drawing::Font(L"微軟正黑體", 26.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(136)));
+			this->label3->Location = System::Drawing::Point(756, 645);
+			this->label3->Name = L"label3";
+			this->label3->Size = System::Drawing::Size(99, 45);
+			this->label3->TabIndex = 12;
+			this->label3->Text = L"玩家:";
+			// 
+			// ModeLabel
+			// 
+			this->ModeLabel->BackColor = System::Drawing::Color::Transparent;
+			this->ModeLabel->Font = (gcnew System::Drawing::Font(L"微軟正黑體", 27.75F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(136)));
+			this->ModeLabel->Location = System::Drawing::Point(738, 162);
+			this->ModeLabel->Name = L"ModeLabel";
+			this->ModeLabel->Size = System::Drawing::Size(38, 280);
+			this->ModeLabel->TabIndex = 96;
+			// 
 			// ChessClientForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 12);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
+			this->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"$this.BackgroundImage")));
+			this->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
 			this->ClientSize = System::Drawing::Size(1084, 811);
+			this->Controls->Add(this->ModeLabel);
+			this->Controls->Add(this->label3);
+			this->Controls->Add(this->label2);
+			this->Controls->Add(this->label1);
+			this->Controls->Add(this->Player2LB);
+			this->Controls->Add(this->Player1LB);
 			this->Controls->Add(this->Chessboardpanel);
 			this->Controls->Add(this->KeyInTB);
 			this->Controls->Add(this->ChatTB);
-			this->Controls->Add(this->ConnectBT);
-			this->Controls->Add(this->send);
 			this->DoubleBuffered = true;
 			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedSingle;
 			this->Name = L"ChessClientForm";
 			this->Text = L"ChessClientForm";
+			this->FormClosed += gcnew System::Windows::Forms::FormClosedEventHandler(this, &ChessClientForm::ChessClientForm_FormClosed);
 			this->Load += gcnew System::EventHandler(this, &ChessClientForm::ChessClientForm_Load);
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->PB09))->EndInit();
 			this->Chessboardpanel->ResumeLayout(false);
@@ -1756,7 +1855,17 @@ private: System::ComponentModel::IContainer^  components;
 	}
 
 	delegate void MyCallback(String^ message);
-	
+
+
+	public: void ChangeMode(String^ message) {
+		ModeLabel->Text= message;
+	}
+
+	public: void UpdataTB(String^ message)
+	{		
+		ChatTB->AppendText(message+Environment::NewLine);
+		KeyInTB->Clear();
+	}
 	private: void InitialDraw(PlayerState state) {
 		for (unsigned int i = 0; i < 9; i++) {
 			for (unsigned int j = 0; j < 10; j++) {
@@ -1772,7 +1881,7 @@ private: System::ComponentModel::IContainer^  components;
 		ChessboardState[0, 0] = gcnew Chessman_Rooks(0, 0, (ChessColor)(toggle == true));
 		ChessboardState[1, 0] = gcnew Chessman_Knights(1, 0, (ChessColor)(toggle == true));
 		ChessboardState[2, 0] = gcnew Chessman_Elephants(2, 0, (ChessColor)(toggle == true));
-		ChessboardState[6, 0] = gcnew Chessman_Advisors(6, 0, (ChessColor)(toggle == true));
+		ChessboardState[3, 0] = gcnew Chessman_Advisors(3, 0, (ChessColor)(toggle == true));
 		ChessboardState[4, 0] = gcnew Chessman_King(4, 0, (ChessColor)(toggle == true));
 		ChessboardState[5, 0] = gcnew Chessman_Advisors(5, 0, (ChessColor)(toggle == true));
 		ChessboardState[6, 0] = gcnew Chessman_Elephants(6, 0, (ChessColor)(toggle == true));
@@ -1876,27 +1985,97 @@ private: System::ComponentModel::IContainer^  components;
 		}
 	};
 
-	public: void UpdataTB(String^ message)
-	{
-		ChatTB->SelectionStart = ChatTB->Text->Length;
-		ChatTB->ScrollToCaret();
-		KeyInTB->Clear();
-		ChatTB->Text +=  message+Environment::NewLine ;
+	delegate void MyCallback3();
+
+	delegate void DrawChessCallback(List<Point>^, int);
+	public: void DrawChess(List<Point>^ MoveList,int count) {
+		InitialDraw(PlayerState::Player1);
+		for (int i = 0; i < count; i+=2) {
+
+			
+			//座標跟本身物件指標交換
+			ChessboardState[MoveList[i].X, MoveList[i].Y]->SetXY(MoveList[i+1].X, MoveList[i+1].Y);
+			ChessboardState[MoveList[i+1].X, MoveList[i+1].Y] = ChessboardState[MoveList[i].X, MoveList[i].Y];
+			ChessboardState[MoveList[i].X, MoveList[i].Y] = nullptr;
+
+			ThisGame->AllPB[MoveList[i+1].X, MoveList[i+1].Y]->Image = ThisGame->AllPB[MoveList[i].X, MoveList[i].Y]->Image;
+			ThisGame->AllPB[MoveList[i].X, MoveList[i].Y]->Image = nullptr;
+			
+
+		}
+
 	}
+	public: void GameOver() {
+		//loginform2 = gcnew LoginForm();
+
+		//loginform2->FormClosed += gcnew FormClosedEventHandler(this, &ChessClientForm::ChessClientForm_FormClosed);//this, &ChessServerForm::Sendbutton_Click
+
+		//loginform2->Show();//開啟子視窗
+		//this->Hide();//隱藏父視窗
+
+	}
+
+	
+
+	private: System::Void ChessClientForm_FormClosed(System::Object^  sender, System::Windows::Forms::FormClosedEventArgs^  e) {
+
+		this->Close();
+	}
+
 
 	private: void ReceiveCallback(IAsyncResult^ AR)
 	{
 		Socket^ current = (Socket^)AR->AsyncState;
 		try
 		{
-			int received = clientSocket->EndReceive(AR);
+			//偷偷驅動走動
+			if (Encoding::ASCII->GetString(buffer, 0, 1) == "@") {
+				if (Encoding::ASCII->GetString(buffer, 1, 7) == "player1") {
+					if (Thisplayer->GetPlayerState() == PlayerState::Player1) 
+						Thisplayer->SetISMoving(true);
+					else
+						Thisplayer->SetISMoving(false);
+					
+				}
+				else if (Encoding::ASCII->GetString(buffer, 1, 7) == "player2") {
+					if (Thisplayer->GetPlayerState() == PlayerState::Player2)
+						Thisplayer->SetISMoving(true);
+					else
+						Thisplayer->SetISMoving(false);
+				}
+				System::Array::Clear(buffer, 0, buffer->Length);
+				
+				clientSocket->BeginReceive(buffer, 0, buffer->Length, SocketFlags::None, gcnew AsyncCallback(this, &ChessClientForm::ReceiveCallback), clientSocket);
+				return;
+			}
 
+			
+			MyCallback^ callback = gcnew MyCallback(this, &ChessClientForm::ChangeMode);
+			if (Thisplayer->GetPlayerState() == PlayerState::Watching || Enemy->GetPlayerState() == PlayerState::Watching) {
+				
+				this->Invoke(callback, "觀戰模式");
+			}
+			else {
+				
+				this->Invoke(callback, "我方下棋");
+				
+				
+			}
+			
+
+
+			//MyCallback^ callback = gcnew MyCallback(this, &ChessClientForm::UpdataTB);
+			int received = clientSocket->EndReceive(AR);
+			//this->Invoke(callback, "received:" + received);
 			if (received == 0)
 			{
 				return;
 			}
 			int code=BitConverter::ToInt16(buffer, 0);
-			if (code == 1) {
+
+			//聊天室訊息
+
+			if (code == -100) {
 				int MessageLength = BitConverter::ToInt32(buffer, 2);
 				String^ message = Encoding::ASCII->GetString(buffer,6,MessageLength);
 				//buffer = gcnew array<Byte>(clientSocket->ReceiveBufferSize);
@@ -1905,28 +2084,90 @@ private: System::ComponentModel::IContainer^  components;
 				this->Invoke(callback, message);
 			}
 
-			else if(code == 2) {
-				PacketProcessing::ReceiveMoveInfo(buffer);
-				if (PacketProcessing::playerstate == Thisplayer->GetPlayerState()&& PacketProcessing::playerstate!= PlayerState::Watching) {
-					
-					//src->des;
-					
+			//觀戰者繪圖
+			if (code!=-100&&(Thisplayer->GetPlayerState() == PlayerState::Watching || Enemy->GetPlayerState() == PlayerState::Watching)) {
+				int count = 0;
+				List<Point>^ MoveList = PacketProcessing::ReceiveWatchingInfo(buffer, count);
+				DrawChessCallback^ callback = gcnew DrawChessCallback(this, &ChessClientForm::DrawChess);
+				this->Invoke(callback, MoveList, count);
+				System::Array::Clear(buffer, 0, buffer->Length);
+				clientSocket->BeginReceive(buffer, 0, buffer->Length, SocketFlags::None, gcnew AsyncCallback(this, &ChessClientForm::ReceiveCallback), clientSocket);
+				return;
+			}
+
+
+
+			//移動
+
+			else if(code == -5) {
+				Point^ src = gcnew Point();
+				Point^ des = gcnew Point();
+				PlayerState ReceiveState;
+				PacketProcessing::ReceiveMoveInfo(src,des,buffer, ReceiveState);
+
+				array<unsigned char>^ temp = buffer;
+				//this->Invoke(callback, "1111(" + src->X + "," + src->Y + ")  " + "(" + des->X + "," + des->Y + ")  ");
+				//this->Invoke(callback, " Receiveplayer:" + (int)(PacketProcessing::PlayerSend) + "");
+
+				//this->Invoke(callback,  " Receiveplayer:" + int(ReceiveState).ToString() + "");
+				Thisplayer->SetISMoving(ReceiveState != Thisplayer->GetPlayerState());
+				if (Thisplayer->GetISMoving()/*&& ReceiveState != PlayerState::Watching*/) {
+
 					//座標跟本身物件指標交換
+					MyCallback^ callback = gcnew MyCallback(this, &ChessClientForm::UpdataTB);
+					//this->Invoke(callback, "2222(" + src->X + "," + src->Y + ")  " + "(" + des->X + "," + des->Y + ")  ");
 
-					ChessboardState[8 - PacketProcessing::src->X, 9 - PacketProcessing::src->Y]->SetXY(8 - PacketProcessing::des->X, 9 - PacketProcessing::des->Y);
-					ChessboardState[8 - PacketProcessing::des->X, 9 - PacketProcessing::des->Y] = ChessboardState[8 - PacketProcessing::src->X, 9 - PacketProcessing::src->Y];
-					ChessboardState[8 - PacketProcessing::src->X, 9 - PacketProcessing::src->Y] = nullptr;
+					if ((8 - src->X) == EnemyGeneral->X&&( 9 - src->Y)== EnemyGeneral->Y) {
+						EnemyGeneral->X = 8 - des->X;
+						EnemyGeneral->Y = 9 - des->Y;
+					}
+
+					ChessboardState[8 - src->X, 9 - src->Y]->SetXY(8 - des->X, 9 - des->Y);
+					ChessboardState[8 - des->X, 9 - des->Y] = ChessboardState[8 - src->X, 9 - src->Y];
+					ChessboardState[8 - src->X, 9 - src->Y] = nullptr;					
+					ThisGame->AllPB[8 - des->X, 9 - des->Y]->Image = ThisGame->AllPB[8 - src->X, 9 - src->Y]->Image;
+					ThisGame->AllPB[8 - src->X, 9 - src->Y]->Image = nullptr;
+					
+					if (ChessboardState[MyGeneral->X, MyGeneral->Y]->GetName() != "King") {
+						MessageBox::Show("你輸囉!!!!!");
+					}
+					List<Point>^ MoveList = gcnew List<Point>();
+					for (unsigned int i = 0; i < 9; i++) {
+						for (unsigned int j = 0; j < 10; j++) {
+							if (ChessboardState[i, j] != nullptr) {	
+								MoveList = ChessboardState[i, j]->GetMoveList(ChessboardState);
+								if (MoveList->Contains(*MyGeneral)) {									
+									MessageBox::Show("將軍!!!!!");																								
+								}
+							}							
+						}
+					}					
+					if (MyGeneral->X == EnemyGeneral->X) {
+						for (int j = MyGeneral->Y+1;j<EnemyGeneral->Y; j++) {
+
+							if (ChessboardState[MyGeneral->X, j] != nullptr) {
+								break;
+							}
+							if (j == EnemyGeneral->Y - 1) {
+								MessageBox::Show("王對王!!!!!");
+							}
+						}
+					}
 
 
-
-					Thisplayer->SetISMoving(true);
+						/*ChatTB->Text += "\n\nIm 2" + Environment::NewLine;
+						auto bmp = (Bitmap^)e->Data->GetData(DataFormats::Bitmap);
+						PicBox->Image = bmp;
+						MouseDownPB->Image = nullptr;
+						MouseDownPB = nullptr;*/
 				
 				}						
 			}
 
 
 			
-			buffer = gcnew array<Byte>(clientSocket->ReceiveBufferSize);
+			//buffer = gcnew array<Byte>(clientSocket->ReceiveBufferSize);
+			System::Array::Clear(buffer, 0, buffer->Length);
 			clientSocket->BeginReceive(buffer, 0, buffer->Length, SocketFlags::None, gcnew AsyncCallback(this, &ChessClientForm::ReceiveCallback), clientSocket);
 		}
 		// Avoid Pokemon exception handling in cases like these.
@@ -1980,43 +2221,30 @@ private: System::ComponentModel::IContainer^  components;
 		MessageBox::Show(message, Application::ProductName, MessageBoxButtons::OK, MessageBoxIcon::Error);
 	}
 	
-	private: void UpdateControlStates(bool toggle)
-	{
-		/*Action<string> messageTarget;
-		this->Invoke(delegate^ ()  
-		{
-			buttonSend->Enabled = toggle;
-			buttonConnect->Enabled = !toggle;
-			labelIP->Visible = textBoxAddress->Visible = !toggle;
-		});*/
-	}
+	
 
 	private: System::Void send_Click(System::Object^  sender, System::EventArgs^  e) {
 
 		if (KeyInTB->Text!="") {
 			
-			//for (int i = 0;i<2;i++) {
-			//	if (i==0) {
-			//		array<Byte>^ buffer2=gcnew array<Byte>(1024);
-			//		clientSocket->BeginSend(buffer2, 0, buffer2->Length, SocketFlags::None, gcnew AsyncCallback(this, &ChessClientForm::SendCallback), clientSocket);
-			//		//clientSocket->BeginReceive(buffer, 0, buffer->Length, SocketFlags::None, gcnew AsyncCallback(this, &ChessClientForm::ReceiveCallback), nullptr);
-			//	}
-			//	else if (i == 1) {
-					List<Byte>^ byteMessageList = gcnew List<Byte>();
+			
 
-					byteMessageList->AddRange(BitConverter::GetBytes((short)1));
-					byteMessageList->AddRange(BitConverter::GetBytes(KeyInTB->Text->Length));
-					byteMessageList->AddRange(Encoding::ASCII->GetBytes(KeyInTB->Text));
+				List<Byte>^ byteMessageList = gcnew List<Byte>();
 
-					array<unsigned char>^ sendData = byteMessageList->ToArray();
-					MyCallback^ callback = gcnew MyCallback(this, &ChessClientForm::UpdataTB);
+				byteMessageList->AddRange(BitConverter::GetBytes((short)-100));
+				byteMessageList->AddRange(BitConverter::GetBytes(WatcherName->Length+1 + KeyInTB->Text->Length));
+				byteMessageList->AddRange(Encoding::ASCII->GetBytes(WatcherName + ":" + KeyInTB->Text));
 
-					this->Invoke(callback, KeyInTB->Text);
+				array<unsigned char>^ sendData = byteMessageList->ToArray();
+				MyCallback^ callback = gcnew MyCallback(this, &ChessClientForm::UpdataTB);
+			
 
-					clientSocket->BeginSend(sendData, 0, sendData->Length, SocketFlags::None, gcnew AsyncCallback(this, &ChessClientForm::SendCallback), clientSocket);
-					//clientSocket->BeginReceive(buffer, 0, buffer->Length, SocketFlags::None, gcnew AsyncCallback(this, &ChessClientForm::ReceiveCallback), nullptr);
-				/*}
-			}*/
+				this->Invoke(callback, WatcherName+":"+ KeyInTB->Text);
+
+				clientSocket->BeginSend(sendData, 0, sendData->Length, SocketFlags::None, gcnew AsyncCallback(this, &ChessClientForm::SendCallback), clientSocket);
+				//clientSocket->BeginReceive(buffer, 0, buffer->Length, SocketFlags::None, gcnew AsyncCallback(this, &ChessClientForm::ReceiveCallback), nullptr);
+		
+
 		}
 
 	}
@@ -2028,7 +2256,7 @@ private: System::ComponentModel::IContainer^  components;
 			clientSocket = gcnew Socket(AddressFamily::InterNetwork, SocketType::Stream, ProtocolType::Tcp);
 			// Connect to the specified host.
 			
-			auto endPoint = gcnew IPEndPoint(IPAddress::Parse("127.0.0.1"), 1234);
+			auto endPoint = gcnew IPEndPoint(IPAddress::Parse("192.168.2.50"), 1234);//"140.116.71.76"
 			clientSocket->BeginConnect(endPoint, gcnew AsyncCallback(this, &ChessClientForm::ConnectCallback), clientSocket);
 		}
 		catch (SocketException^ ex)
@@ -2040,9 +2268,11 @@ private: System::ComponentModel::IContainer^  components;
 			ShowErrorDialog(ex->Message);
 		}
 	}
-	private: System::Void textBox1_TextChanged(System::Object^  sender, System::EventArgs^  e) {
+	
+	private: System::Void ChatTB_TextChanged(System::Object^  sender, System::EventArgs^  e) {
+		ChatTB->SelectionStart = ChatTB->Text->Length;
+		ChatTB->ScrollToCaret();
 	}
-
 	private: System::Void PB00_MouseDown(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e) {
 
 		PictureBox^ PicBox = (PictureBox^)sender;
@@ -2054,7 +2284,7 @@ private: System::ComponentModel::IContainer^  components;
 		Int16::TryParse(MouseDownPB->Name->Substring(3, 1), MouseDownY);
 
 		Image^ img = PicBox->Image;
-		ChatTB->Text += "\n\nIm MouseDown"+ Environment::NewLine;	
+		//ChatTB->Text += "\n\nIm MouseDown"+ Environment::NewLine;	
 		//圖片為空;沒有移動棋子所有權;移動別人的棋子  都不行
 		if (img == nullptr ||!Thisplayer->GetISMoving()||ChessboardState[MouseDownX,MouseDownY]->GetColor()!=Thisplayer->GetChessColor()) return; //如果圖片沒有東西就直接return	
 	
@@ -2066,7 +2296,7 @@ private: System::ComponentModel::IContainer^  components;
 	private: System::Void PB00_DragEnter(System::Object^  sender, System::Windows::Forms::DragEventArgs^  e) {
 		PictureBox^ PicBox = (PictureBox^)sender;
 
-		ChatTB->Text += "\n\nIm DragEnter" + Environment::NewLine;
+		//ChatTB->Text += "\n\nIm DragEnter" + Environment::NewLine;
 		if (PicBox != MouseDownPB)
 		{
 			if (e->Data->GetDataPresent(DataFormats::Bitmap))//檢查轉換成指定格式的資料是否無法使用這種格式。
@@ -2075,7 +2305,7 @@ private: System::ComponentModel::IContainer^  components;
 	}
 	private: System::Void PB00_DragDrop(System::Object^  sender, System::Windows::Forms::DragEventArgs^  e) {
 		PictureBox^ PicBox = (PictureBox^)sender;
-		ChatTB->Text += "\n\nIm DragDrop" + Environment::NewLine;
+		//ChatTB->Text += "\n\nIm DragDrop" + Environment::NewLine;
 		if (MouseDownPB!=nullptr&&PicBox != MouseDownPB)
 		{
 			short OriX = 0;
@@ -2083,7 +2313,7 @@ private: System::ComponentModel::IContainer^  components;
 			Int16::TryParse(MouseDownPB->Name->Substring(2, 1), OriX);
 			Int16::TryParse(MouseDownPB->Name->Substring(3, 1), OriY);
 
-			ChatTB->Text += "\n\nIm 1" + Environment::NewLine;
+			
 			short DesX = 0;
 			short DesY = 0;
 			Int16::TryParse(PicBox->Name->Substring(2, 1), DesX);
@@ -2091,36 +2321,66 @@ private: System::ComponentModel::IContainer^  components;
 
 
 			//********************這邊最後記得防nullptr!!!!!!!
-			List<Point>^ MoveList = gcnew List<Point>();
-
-	
-			MoveList = ChessboardState[OriX, OriY]->GetMoveList(ChessboardState);
-			if (MoveList->Contains(Point(DesX, DesY))) {
-				ChatTB->Text += "\n\nIm 2" + Environment::NewLine;
-				auto bmp = (Bitmap^)e->Data->GetData(DataFormats::Bitmap);
-				PicBox->Image = bmp;
-				MouseDownPB->Image = nullptr;
-				MouseDownPB = nullptr;
-				//座標跟本身物件指標交換
-				ChessboardState[OriX, OriY]->SetXY(DesX, DesY);
-				ChessboardState[DesX, DesY] =ChessboardState[OriX, OriY];
-				ChessboardState[OriX, OriY] = nullptr;
+			if (ChessboardState[OriX, OriY] != nullptr) {
+				List<Point>^ MoveList = gcnew List<Point>();
 
 
-				//下完棋之後傳送封包
-				Point^ src = gcnew Point(OriX, OriY);
-				Point^ des = gcnew Point(DesX, DesY);
-
-				array<Byte>^ MoveInfobuffer = PacketProcessing::MoveInfoToByteArray(Thisplayer,src, des);
-
-				Thisplayer->SetISMoving(false);
+				MoveList = ChessboardState[OriX, OriY]->GetMoveList(ChessboardState);
+				if (MoveList->Contains(Point(DesX, DesY))) {
 
 
+					if (MyGeneral->X == OriX&&MyGeneral->Y == OriY) {
+						MyGeneral->X = DesX;
+						MyGeneral->Y = DesY;
+					}
+
+
+					auto bmp = (Bitmap^)e->Data->GetData(DataFormats::Bitmap);
+					PicBox->Image = bmp;
+					MouseDownPB->Image = nullptr;
+					MouseDownPB = nullptr;
+					//座標跟本身物件指標交換
+					ChessboardState[OriX, OriY]->SetXY(DesX, DesY);
+					ChessboardState[DesX, DesY] = ChessboardState[OriX, OriY];
+					ChessboardState[OriX, OriY] = nullptr;
+
+
+					//下完棋之後傳送封包
+					Point^ src = gcnew Point(OriX, OriY);
+					Point^ des = gcnew Point(DesX, DesY);
+
+					MyCallback^ callback5 = gcnew MyCallback(this, &ChessClientForm::ChangeMode);
+					
+					this->Invoke(callback5,"敵方下棋");
+
+
+					array<Byte>^ MoveInfobuffer = PacketProcessing::MoveInfoToByteArray(Thisplayer, src, des);
+
+					Thisplayer->SetISMoving(false);
+					if (ChessboardState[EnemyGeneral->X, EnemyGeneral->Y]->GetName()!="King" ) {
+						MessageBox::Show("你贏了!!!!!");
+						MyCallback3^ callback3 = gcnew MyCallback3(this, &ChessClientForm::GameOver);
+
+						this->Invoke(callback3);
+					}
+
+					//MyCallback^ callback = gcnew MyCallback(this, &ChessClientForm::UpdataTB);
+					//this->Invoke(callback, "(" + src->X + "," + src->Y + ")  " + "(" + des->X + "," + des->Y + ")  " + " playerSend:" + (int)(Thisplayer->GetPlayerState()) + "");
+					clientSocket->BeginSend(MoveInfobuffer, 0, MoveInfobuffer->Length, SocketFlags::None, gcnew AsyncCallback(this, &ChessClientForm::SendCallback), clientSocket);
+				}
 			}
 		}
 	}	
 
 
+
+
+private: System::Void KeyInTB_KeyDown(System::Object^  sender, System::Windows::Forms::KeyEventArgs^  e) {
+	if (e->KeyCode == Keys::Enter)
+	{
+		send_Click(sender, e);
+	}
+}
 
 };
 }
